@@ -1,0 +1,15 @@
+{
+  "name": "bloggest",
+  "description": "",
+  "version": "0.0.1",
+  "author": "Niall Lewin",
+  "scripts": {
+    "scss": "node-sass --watch styles -o css",
+    "clean": "@powershell Remove-Item D:\\wamp64\\www\\* -Recurse -Force",
+    "copy": "@powershell Copy-Item -Path * -Exclude ('node_modules', 'styles') -Destination D:\\wamp64\\www -Force -Recurse",
+    "cleancopy": "npm run clean && npm run copy"
+  },
+  "dependencies": {
+    "node-sass": "^6.0.1"
+  }
+}

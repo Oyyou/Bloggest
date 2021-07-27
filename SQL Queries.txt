@@ -1,0 +1,1 @@
+INSERT INTO Comments (UserId, BlogId, TimePosted, Value) Values (13, 26, "2021-03-12", "Very cool")
