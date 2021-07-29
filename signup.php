@@ -3,11 +3,6 @@
 
 <div class="container table-container">
     <form method="post" class="form-login">
-        <?php
-        $rand = rand();
-        $_SESSION['rand'] = $rand;
-        ?>
-        <input type="hidden" value="<?php echo $rand; ?>" name="randcheck" />
         <table>
             <tr>
                 <td><label for="username">Username:</label></td>
@@ -33,6 +28,8 @@
 
     <?php if (isset($_GET['status']) and $_GET['status'] == 'success') : ?>
         <p>Sign up successful! <a href="/login">Log in</a></p>
+    <?php elseif (isset($_GET['status']) and $_GET['status'] == 'fail') : ?>
+        <p>Issue creating profile. Try again</p>
     <?php endif; ?>
 </div>
 <?php include("components/footer.php"); ?>
@@ -47,21 +44,24 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
     $email = $_POST["email"];
     $password = password_hash($_POST["password"], PASSWORD_DEFAULT);
 
-    $sql1 = mysqli_query($conn, "SELECT * FROM Users where Email='$email'");
-    $sql2 = mysqli_query($conn, "SELECT * FROM Users where username='$username'");
-    if (mysqli_num_rows($sql1) > 0) {
+    $emailUser = getUserbyName($conn, $username);
+    $emailEmail = getUserbyEmail($conn, $email);
+
+    //var_dump($emailUser);
+    //var_dump($emailEmail);
+
+    if (!empty($emailEmail)) {
         echo "Email exists!";
         exit;
-    } else if (mysqli_num_rows($sql2) > 0) {
+    } else if (!empty($emailUser)) {
         echo "Username exists!";
         exit;
     } else if (isset($_POST['submit'])) {
-
-        $stmt = $conn->prepare("INSERT INTO Users (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $email, $password);
-
-        $stmt->execute();
-        header('location:signup?status=success');
+        if (addNewUser($conn, $username, $email, $password)) {
+            header('location:signup?status=success');
+        } else {
+            header('location:signup?status=fail');
+        }
     }
     $conn->close();
 }

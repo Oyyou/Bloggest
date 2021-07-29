@@ -1,58 +1,25 @@
 <?php
 $foundBlog = false;
-
-$title = "";
-$subTitle = "";
-$body = "";
-$tags = "";
-$comments = [];
-
-print_r($_GET);
+$blog = null;
+$author = null;
 
 if (isset($_GET['id'])) {
     include("database.php");
-    $qid = $_GET['id'];
-    $sql = "SELECT * FROM Blogs B INNER JOIN Comments C on B.Id = C.BlogId Where B.Id = ?";
-    $result = $conn->query($sql);
+    $blog = getBlogById($conn, $_GET['id']);
 
-    while ($row = $result->fetch_assoc()) {
-        print_r($row);
-    }
-    /*
-    $sql = "SELECT id, title, subTitle, body, tags FROM Blogs where id=? LIMIT 1";
+    if ($blog) {
+        $foundBlog = true;
+        $author = getUserById($conn, $blog->userId);
 
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
-        $stmt->bind_param('i', $qid);
-        $stmt->execute();
-        $stmt->bind_result($id, $title, $subTitle, $body, $tags);
-        $success = $stmt->fetch();
-
-        if ($success) {
-            $foundBlog = true;
-        } else {
+        if (!$author) {
             $foundBlog = false;
         }
-        $conn->close();
-        include("database.php");
 
-        $sqlComments = "SELECT id, userId, blogId, value, timePosted from Comments where blogId=?";
-        $stmtComments = $conn->prepare($sqlComments);
-        if ($stmtComments) {
-            print_r("Hello");
-            $stmtComments->bind_param('i', $id);
-            $stmtComments->execute();
-            $stmtComments->bind_result($cid, $blogUserId, $blogId, $value, $timePosted);
+        //var_dump($blog);
+        //var_dump($author);
+    }
 
-            print_r($cid);
-            print_r($blogUserId);
-            print_r($blogId);
-            print_r($value);
-        }
-    }*/
-}
-
-if (!$foundBlog) {
+    $conn->close();
 }
 ?>
 
@@ -61,20 +28,21 @@ if (!$foundBlog) {
 <div class="container">
     <div class="blog-container">
         <?php if ($foundBlog) : ?>
-            <h1><?= $title ?></h1>
-            <h2><?= $subTitle ?></h2>
+            <h1><?= $blog->title ?></h1>
+            <h2><?= $blog->subTitle ?></h2>
+            <p class="blog-author"><?= $author->Username ?></p>
             <div class="blog-body-container">
                 <?php
                 $dom = new DOMDocument();
 
                 $dom->preserveWhiteSpace = false;
-                $dom->loadHTML($body);
+                $dom->loadHTML($blog->body);
                 $dom->formatOutput = true;
 
                 print $dom->saveXML($dom->documentElement);
                 ?>
             </div>
-            <p><?= $tags ?></p>
+            <p><?= $blog->tags ?></p>
     </div>
     <div class="blog-comments-container">
         <div class="add-comment-container"></div>
