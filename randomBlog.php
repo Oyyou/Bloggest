@@ -13,6 +13,6 @@ $result->data_seek($rand);
 $datarow = $result->fetch_array();
 $obj = $datarow;
 print $obj;
-header("location: /blog.php?id=".$obj[0]);
+header("location: /blog/".$obj[0]);
 exit;
 ?>

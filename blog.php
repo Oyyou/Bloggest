@@ -3,9 +3,16 @@ $foundBlog = false;
 $blog = null;
 $author = null;
 
-if (isset($_GET['id'])) {
+$params = explode("/", $_SERVER["REQUEST_URI"]);
+$blodId = end($params);
+//var_dump($blodId);
+//var_dump($_GET);
+//var_dump($_SERVER);
+//var_dump($_REQUEST);
+
+if ($blodId) {
     include("database.php");
-    $blog = getBlogById($conn, $_GET['id']);
+    $blog = getBlogById($conn, $blodId);
 
     if ($blog) {
         $foundBlog = true;

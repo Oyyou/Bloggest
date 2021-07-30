@@ -22,6 +22,8 @@ if (isset($_POST["title"]) && isset($_POST["body"])) {
         $stmt->bind_param("issss", $userId, $title, $subtitle, $body, $tags);
 
         $stmt->execute();
+
+        header("location: /dashboard");
     }
     $conn->close();
     $_POST = array();

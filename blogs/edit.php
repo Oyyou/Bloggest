@@ -3,6 +3,9 @@
 include("../components/header.php");
 include("../components/nav.php");
 
+$params = explode("/", $_SERVER["REQUEST_URI"]);
+$blodId = end($params);
+
 $foundBlog = false;
 $unauthorizedBlog = false;
 
@@ -12,9 +15,9 @@ $subTitle = "";
 $body = "";
 $tags = "";
 
-if (isset($_GET['id'])) {
+if ($blodId) {
     include("../database.php");
-    $qid = $_GET['id'];
+    $qid = $blodId;
     $sql = "SELECT id, userId, title, subTitle, body, tags FROM Blogs where id=? LIMIT 1";
 
     $stmt = $conn->prepare($sql);

@@ -31,7 +31,7 @@
                             <tr>
                                 <td><?php print $row["title"] ?></td>
                                 <td><?php print $row["subTitle"] ?></td>
-                                <td><a href=<?= "/blogs/edit?id=" . $row["id"] ?>>Edit</a></td>
+                                <td><a href=<?= "/blogs/edit/" . $row["id"] ?>>Edit</a></td>
                             </tr>
                         <?php } ?>
                     </tbody>
