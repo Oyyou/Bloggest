@@ -43,6 +43,17 @@ function getUserbyEmail(mysqli $conn, string $email)
     return $value;
 }
 
+function getUserbyUsername(mysqli $conn, string $username)
+{
+    $stmt = $conn->prepare("SELECT Username, Title FROM Users Where Username=? limit 1");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $value = $result->fetch_object();
+
+    return $value;
+}
+
 function addNewUser(mysqli $conn, string $username, string $email, string $hasedPassword)
 {
     $stmt = $conn->prepare("INSERT INTO Users (username, email, password) VALUES (?, ?, ?)");

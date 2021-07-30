@@ -37,7 +37,7 @@ if ($blodId) {
         <?php if ($foundBlog) : ?>
             <h1><?= $blog->title ?></h1>
             <h2><?= $blog->subTitle ?></h2>
-            <p class="blog-author"><?= $author->Username ?></p>
+            <p class="blog-author"><a href="/user/<?= $author->Username ?>"><?= $author->Username ?></a></p>
             <div class="blog-body-container">
                 <?php
                 $dom = new DOMDocument();
