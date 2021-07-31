@@ -4,7 +4,7 @@ include("../components/header.php");
 include("../components/nav.php");
 
 $params = explode("/", $_SERVER["REQUEST_URI"]);
-$blodId = end($params);
+$blogId = end($params);
 
 $foundBlog = false;
 $unauthorizedBlog = false;
@@ -15,9 +15,9 @@ $subTitle = "";
 $body = "";
 $tags = "";
 
-if ($blodId) {
+if ($blogId) {
     include("../database.php");
-    $qid = $blodId;
+    $qid = $blogId;
     $sql = "SELECT id, userId, title, subTitle, body, tags FROM Blogs where id=? LIMIT 1";
 
     $stmt = $conn->prepare($sql);
@@ -36,6 +36,8 @@ if ($blodId) {
             $foundBlog = false;
         }
     }
+
+    $conn->close();
 }
 ?>
 
@@ -56,7 +58,9 @@ if ($blodId) {
 
 <?php
 extract($_POST);
-if (isset($_POST["title"]) && isset($_POST["body"]) && isset($_GET['id'])) {
+if (isset($_POST["title"]) && isset($_POST["body"]) && isset($blogId)) {
+
+    $conn = getContext();
 
     $userId = $_SESSION["id"];
     $title = $_POST["title"];
@@ -65,7 +69,6 @@ if (isset($_POST["title"]) && isset($_POST["body"]) && isset($_GET['id'])) {
     $tags = $_POST["tags"];
 
     if (isset($_POST['submit'])) {
-        include("../database.php");
 
         $query = "UPDATE Blogs SET title=?, subTitle=?, body=?, tags=? WHERE id=?";
         $stmt = $conn->prepare($query);
@@ -75,12 +78,13 @@ if (isset($_POST["title"]) && isset($_POST["body"]) && isset($_GET['id'])) {
             return;
         }
 
-        $stmt->bind_param("ssssi", $title, $subTitle, $body, $tags, $_GET['id']);
+        $stmt->bind_param("ssssi", $title, $subTitle, $body, $tags, $blogId);
 
         $stmt->execute();
+        
+        header("location: /dashboard");
     }
-    $conn->close();
 
-    header("location: \dashboard.php");
+    $conn->close();
 }
 ?>

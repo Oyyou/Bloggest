@@ -23,7 +23,7 @@ if (isset($_POST["title"]) && isset($_POST["body"])) {
 
         $stmt->execute();
 
-        header("location: /dashboard");
+        //header("location: /dashboard");
     }
     $conn->close();
     $_POST = array();

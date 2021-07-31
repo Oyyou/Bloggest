@@ -9,6 +9,21 @@ if ($conn->connect_error) {
     die("MySQL connection failed: " . $conn->connect_error);
 }
 
+function getContext()
+{
+    $servernameDb = "localhost";
+    $usernameDb = "root";
+    $passwordDb = "";
+    $dbnameDb = "molfdb";
+
+    $conn = new mysqli($servernameDb, $usernameDb, $passwordDb, $dbnameDb);
+    if ($conn->connect_error) {
+        die("MySQL connection failed: " . $conn->connect_error);
+    }
+
+    return $conn;
+}
+
 function getUserbyName(mysqli $conn, string $username)
 {
     $stmt = $conn->prepare("SELECT * FROM Users Where Username=? limit 1");
@@ -16,7 +31,7 @@ function getUserbyName(mysqli $conn, string $username)
     $stmt->execute();
     $result = $stmt->get_result();
     $value = $result->fetch_object();
-    
+
     return $value;
 }
 

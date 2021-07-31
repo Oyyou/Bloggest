@@ -183,6 +183,79 @@ a {
     }
 }
 
+.blog-container {
+    max-width: 680px;
+    margin: 0 auto;
+    .blog-header-container {
+        margin-top: 25px;
+    }
+
+    .blog-author-container {
+        margin-top: 25px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        @media (max-width: 800px) {
+            flex-direction: column;
+            justify-content: flex-start;
+            .share-container {
+                margin-top: 5px;
+            }
+        }
+    }
+
+    .blog-body-container {
+        margin-top: 30px;
+    }
+
+    .blog-tags-container {
+        margin-top: 25px;
+    }
+
+    @media (max-width: 800px) {
+        padding: 0 10px;
+    }
+}
+
+.share-container {
+    position: relative;
+    width: fit-content;
+    .share-dropdown { 
+        background-color: white;
+        margin-top: 5px;
+        padding: 5px;
+        -moz-box-shadow: 0 0 3px #ccc;
+        -webkit-box-shadow: 0 0 3px #ccc;
+        box-shadow: 0 0 3px #ccc;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 150px;
+
+        ul {
+            li {
+                padding: 8px 15px;
+                div {
+                    cursor: pointer;
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-start;
+                    * {
+                        padding: 0 5px;
+                    }
+                }
+            }
+        }
+
+        @media (max-width: 800px) {
+            left: 0;
+            transform: translateX(0);
+        }
+    }
+}
+
 .blog-body-container {
     h1 {
         font-size: 1.10em;
