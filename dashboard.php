@@ -8,39 +8,33 @@
         <h2>How can we help you today?</h2>
         <h3><a href="/blogs/create">Create a blog</a></h3>
 
-        <p>Recent blogs</p>
-        <div class="blog-list">
-            <?php
-            include("database.php");
-            $conn = getConnection();
-            $id = $_SESSION["id"];
-            $sql = "SELECT id, userId, title, subTitle, body, tags FROM Blogs where UserId=" . $id;
-            $result = $conn->query($sql);
+        <div class="dashboard-body">
+            <h4>Recent blogs</h4>
+            <div class="blog-list">
+                <?php
+                include("database.php");
+                $conn = getConnection();
+                $id = $_SESSION["id"];
+                $sql = "SELECT id, userId, title, subTitle, body, tags FROM Blogs where UserId=" . $id;
+                $result = $conn->query($sql);
 
-            if ($result->num_rows > 0) {
-            ?>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>SubTitle</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+                if ($result->num_rows > 0) {
+                ?>
+                    <div class="recent-blogs-table">
+                        <p class="col-1"><b>Title</b></p>
+                        <p class="col-2"><b>Action</b></p>
+
                         <?php while ($row = $result->fetch_assoc()) { ?>
-                            <tr>
-                                <td><?php print $row["title"] ?></td>
-                                <td><?php print $row["subTitle"] ?></td>
-                                <td><a href=<?= "/blogs/edit/" . $row["id"] ?>>Edit</a></td>
-                            </tr>
+
+                            <p class="col-1"><?php print $row["title"] ?></p>
+                            <p class="col-2"><a href=<?= "/blog/" . $row["id"] ?>>View</a> | <a href=<?= "/blogs/edit/" . $row["id"] ?>>Edit</a></p>
                         <?php } ?>
-                    </tbody>
-                </table>
-            <?php
-            }
-            $conn->close();
-            ?>
+                    </div>
+                <?php
+                }
+                $conn->close();
+                ?>
+            </div>
         </div>
     <?php else : ?>
         <h1>You shouldn't be here =)</h1>

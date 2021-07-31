@@ -2,13 +2,8 @@
 $foundUser = false;
 $user = null;
 
-
 $params = explode("/", $_SERVER["REQUEST_URI"]);
 $username = end($params);
-//var_dump($blodId);
-//var_dump($_GET);
-//var_dump($_SERVER);
-//var_dump($_REQUEST);
 
 if ($username) {
     include("database.php");
