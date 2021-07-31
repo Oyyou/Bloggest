@@ -87,5 +87,11 @@ if (isset($_POST["title"]) && isset($_POST["body"]) && isset($blogId)) {
     }
 
     $conn->close();
+
+?>
+    <script type="text/javascript">
+        window.location = "/dashboard";
+    </script>
+<?php
 }
 ?>
