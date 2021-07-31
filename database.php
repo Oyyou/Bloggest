@@ -1,15 +1,5 @@
 <?php
-$servernameDb = "localhost";
-$usernameDb = "root";
-$passwordDb = "";
-$dbnameDb = "molfdb";
-
-$conn = new mysqli($servernameDb, $usernameDb, $passwordDb, $dbnameDb);
-if ($conn->connect_error) {
-    die("MySQL connection failed: " . $conn->connect_error);
-}
-
-function getContext()
+function getConnection()
 {
     $servernameDb = "localhost";
     $usernameDb = "root";

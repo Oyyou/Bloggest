@@ -17,6 +17,7 @@ $tags = "";
 
 if ($blogId) {
     include("../database.php");
+    $conn = getConnection();
     $qid = $blogId;
     $sql = "SELECT id, userId, title, subTitle, body, tags FROM Blogs where id=? LIMIT 1";
 
@@ -60,7 +61,7 @@ if ($blogId) {
 extract($_POST);
 if (isset($_POST["title"]) && isset($_POST["body"]) && isset($blogId)) {
 
-    $conn = getContext();
+    $conn = getConnection();
 
     $userId = $_SESSION["id"];
     $title = $_POST["title"];
@@ -81,8 +82,8 @@ if (isset($_POST["title"]) && isset($_POST["body"]) && isset($blogId)) {
         $stmt->bind_param("ssssi", $title, $subTitle, $body, $tags, $blogId);
 
         $stmt->execute();
-        
-        header("location: /dashboard");
+
+        //header("location: /dashboard");
     }
 
     $conn->close();

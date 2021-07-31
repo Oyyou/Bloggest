@@ -9,6 +9,7 @@ extract($_POST);
 if (isset($_POST["title"]) && isset($_POST["body"])) {
 
     include("../database.php");
+    $conn = getConnection();
 
     $userId = $_SESSION["id"];
     $title = $_POST["title"];

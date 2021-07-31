@@ -13,6 +13,7 @@ $blodId = end($params);
 
 if ($blodId) {
     include("database.php");
+    $conn = getConnection();
     $blog = getBlogById($conn, $blodId);
 
     if ($blog) {

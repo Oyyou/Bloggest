@@ -12,6 +12,7 @@ $username = end($params);
 
 if ($username) {
     include("database.php");
+    $conn = getConnection();
     $user = getUserbyName($conn, $username);
 
     if ($user) {

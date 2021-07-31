@@ -3,6 +3,7 @@
 session_start();
 
 include("database.php");
+$conn = getConnection();
 
 $sql = "SELECT * FROM Blogs";
 $result = $conn->query($sql);
@@ -12,7 +13,9 @@ $rand = rand(0, $count - 1);
 $result->data_seek($rand);
 $datarow = $result->fetch_array();
 $obj = $datarow;
-print $obj;
+
+$conn->close();
+
 header("location: /blog/".$obj[0]);
 exit;
 ?>

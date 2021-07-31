@@ -39,6 +39,7 @@ extract($_POST);
 if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["password"])) {
 
     include("database.php");
+    $conn = getConnection();
 
     $username = $_POST["username"];
     $email = $_POST["email"];

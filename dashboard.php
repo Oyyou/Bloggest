@@ -12,6 +12,7 @@
         <div class="blog-list">
             <?php
             include("database.php");
+            $conn = getConnection();
             $id = $_SESSION["id"];
             $sql = "SELECT id, userId, title, subTitle, body, tags FROM Blogs where UserId=" . $id;
             $result = $conn->query($sql);
