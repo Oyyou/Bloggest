@@ -1,6 +1,7 @@
 <?php
+$foundUser = false;
 $user = null;
-$author = null;
+
 
 $params = explode("/", $_SERVER["REQUEST_URI"]);
 $username = end($params);
@@ -13,6 +14,11 @@ if ($username) {
     include("database.php");
     $user = getUserbyName($conn, $username);
 
+    if ($user) {
+        $foundUser = true;
+    }
+
+
     $conn->close();
 }
 ?>
@@ -21,8 +27,8 @@ if ($username) {
 <?php include("components/nav.php"); ?>
 <div class="container">
     <div class="user-container">
-        <?php if (!$user) : ?>
-            <h1><?= $user->title ?></h1>
+        <?php if ($foundUser) : ?>
+            <h1><?= $user->Username ?></h1>
         <?php else : ?>
             <h1>Nope</h1>
         <?php endif; ?>
