@@ -234,11 +234,33 @@ a {
         transform: translateX(-50%);
         width: 150px;
 
+
+        div {
+            cursor: pointer;
+            display: grid;
+            padding: 5px;
+            grid-auto-columns: minmax(30px, auto);
+            margin: 5px 0;
+
+            svg {
+                grid-column: 1;
+                margin: 0 auto;
+            }
+        
+            p {
+                grid-column: 2;
+                width: 80px;
+            }
+
+            &:hover {
+                background-color: lightgray;
+            }
+        }
+
         ul {
             li {
                 padding: 8px 15px;
                 div {
-                    cursor: pointer;
                     display: flex;
                     flex-direction: row;
                     justify-content: flex-start;
