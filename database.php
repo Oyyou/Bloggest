@@ -71,3 +71,10 @@ function getBlogById(mysqli $conn, int $id)
 
     return $value;
 }
+
+function getBlogs(mysqli $conn, int $amount)
+{
+    $result = $conn->query("SELECT id, userId, title, subTitle, body, tags FROM Blogs LIMIT $amount");
+
+    return $result;
+}

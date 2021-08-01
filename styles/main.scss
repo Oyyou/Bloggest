@@ -106,6 +106,10 @@ a {
     }
 }
 
+.blog-container-preview {
+    margin: 10px 0;
+}
+
 .small-print {
     font-size: 0.9em;
 }
@@ -221,6 +225,33 @@ a {
 .share-container {
     position: relative;
     width: fit-content;
+
+    button {
+        border:none;
+        background-color: transparent;
+        cursor: pointer;
+        height: 16px;
+        width: 16px;
+
+        #share-light {
+            display: block;
+        }
+
+        #share-dark {
+            display: none;
+        }
+        
+        &:hover {
+            #share-light {
+                display: none;
+            }
+    
+            #share-dark {
+                display: block;
+            }
+        }
+    }
+
     .share-dropdown { 
         background-color: white;
         margin-top: 5px;
