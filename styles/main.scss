@@ -128,6 +128,8 @@ a {
     input { 
         width: 100%;
         box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
         margin-bottom: 15px;
     }
 
@@ -158,31 +160,107 @@ a {
     padding: 5px;
 }
 
-.blog-form {
-    padding: 5px;
+.blog-form-container {
     display: grid;
-    grid-template-columns: 0.5fr 1fr;
-    grid-gap: 16px;
+    grid-template-columns: 120px auto;
 
-    label {
-        grid-column: 1 / 2;
-    }
-     
-    input,
-    button {
-        grid-column: 2 / 3;
-    }
-
-    div {
-        grid-column: span 2;
+    .form-side-panel {
         display: flex;
         flex-direction: column;
+        grid-column: 1;
 
-        textarea {
-            box-sizing: border-box;
+        h2 {
+            margin: 0 5px 5px 5px;
+        }
+
+        button {
+            margin: 5px;
+        }
+    }
+
+    .blog-form {
+        .form-body {
+            padding: 5px;
+            display: grid;
+            grid-template-columns: 0.5fr 1fr;
+            grid-gap: 16px;
             width: 100%;
-            resize: vertical;
-            height: 100px;
+            box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+
+            label {
+                grid-column: 1;
+            }
+            
+            input,
+            button {
+                grid-column: 2;
+                box-sizing: border-box;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+            }
+
+            div {
+                width: 100%;
+                grid-column: span 2;
+                display: flex;
+                flex-direction: column;
+
+                textarea {
+                    box-sizing: border-box;
+                    -webkit-box-sizing: border-box;
+                    -moz-box-sizing: border-box;
+                    width: 100%;
+                    resize: vertical;
+                    height: 100px;
+                }
+            }
+
+            .component {
+                box-sizing: border-box;
+                padding: 3px;
+                border: solid 1px lightgray;
+                border-radius: 3px;
+                margin: 5px 0;
+
+                .form-controls {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: flex-end;
+
+                    .button {
+                        align-self: flex-end;
+                        cursor: pointer;
+                        height: 32px;
+                        width: 32px;
+                        text-align: center;
+                        border: solid 1px lightgray;
+
+                        p {
+                            margin: auto;
+                        }
+
+                        &:hover {
+                            background-color: darkgray;
+                        }
+                    }
+
+                    .remove {
+
+                        &:hover {
+                            background-color: red;
+                        }
+                    }
+                }
+
+                .component-body {
+                    img {
+                        width: 240px;
+                        height: 240px;
+                    }
+                }
+            }
         }
     }
 }

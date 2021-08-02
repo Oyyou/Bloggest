@@ -60,6 +60,23 @@ function addNewUser(mysqli $conn, string $username, string $email, string $hased
     // $stmt->error;    
 }
 
+function addBlogComponent(mysqli $conn, int $blogId, string $type, string $content): mysqli_stmt
+{
+    $stmt = $conn->prepare("INSERT INTO Components (blogId, type, content) VALUES (?, ?, ?)");
+    $stmt->bind_param("iss", $blogId, $type, $content);
+
+    $stmt->execute();
+
+    return $stmt;
+}
+
+function getBlogComponents(mysqli $conn, int $blogId)
+{
+    $result = $conn->query("SELECT id, blogId, type, content FROM Components WHERE blogId=$blogId");
+
+    return $result;
+}
+
 function getBlogById(mysqli $conn, int $id)
 {
     $stmt = $conn->prepare("SELECT id, userId, title, subTitle, body, tags FROM Blogs where id=? LIMIT 1");

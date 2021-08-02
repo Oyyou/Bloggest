@@ -14,27 +14,35 @@ $title = "";
 $subTitle = "";
 $body = "";
 $tags = "";
+$componentList = array();
 
 if ($blogId) {
     include("../database.php");
     $conn = getConnection();
     $qid = $blogId;
-    $sql = "SELECT id, userId, title, subTitle, body, tags FROM Blogs where id=? LIMIT 1";
+    $blog = getBlogById($conn, $blogId);
 
-    $stmt = $conn->prepare($sql);
-    if ($stmt) {
-        $stmt->bind_param('i', $qid);
-        $stmt->execute();
-        $stmt->bind_result($id, $userId, $title, $subTitle, $body, $tags);
-        $success = $stmt->fetch();
+    if ($blog) {
+        $userId = $blog->userId;
+        $title = $blog->title;
+        $subTitle = $blog->subTitle;
+        $body = $blog->body;
+        $tags = $blog->tags;
+        $foundBlog = true;
 
-        if ($success) {
-            $foundBlog = true;
-            if ($userId !== $_SESSION["id"]) {
-                $unauthorizedBlog = true;
+        $components = getBlogComponents($conn, $blogId);
+
+        if ($components->num_rows > 0) {
+            while ($component = $components->fetch_assoc()) {
+                if ($component) {
+                    $component["content"] = "data:image/jpg;charset=utf8;base64," . base64_encode($component["content"]);
+                    array_push($componentList, $component);
+                }
             }
-        } else {
-            $foundBlog = false;
+        }
+
+        if ($userId !== $_SESSION["id"]) {
+            $unauthorizedBlog = true;
         }
     }
 
