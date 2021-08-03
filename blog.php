@@ -79,13 +79,13 @@ if ($blodId) {
             </div>
             <div class="blog-body-container">
                 <?php
-                $dom = new DOMDocument();
+                /*$dom = new DOMDocument();
 
                 $dom->preserveWhiteSpace = false;
                 $dom->loadHTML($blog->body);
                 $dom->formatOutput = true;
 
-                print $dom->saveXML($dom->documentElement);
+                print $dom->saveXML($dom->documentElement);*/
                 ?>
             </div>
             <div class="blog-tags-container">

@@ -15,7 +15,7 @@
                 include("database.php");
                 $conn = getConnection();
                 $id = $_SESSION["id"];
-                $sql = "SELECT id, userId, title, subTitle, body, tags FROM Blogs where UserId=" . $id;
+                $sql = "SELECT id, userId, title, shortDescription, tags FROM Blogs where UserId=" . $id;
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {

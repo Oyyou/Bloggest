@@ -60,10 +60,10 @@ function addNewUser(mysqli $conn, string $username, string $email, string $hased
     // $stmt->error;    
 }
 
-function addBlogComponent(mysqli $conn, int $blogId, string $type, string $content): mysqli_stmt
+function addBlogComponent(mysqli $conn, int $blogId, int $outputOrder, string $type, string $content): mysqli_stmt
 {
-    $stmt = $conn->prepare("INSERT INTO Components (blogId, type, content) VALUES (?, ?, ?)");
-    $stmt->bind_param("iss", $blogId, $type, $content);
+    $stmt = $conn->prepare("INSERT INTO Components (blogId, outputOrder, type, content) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("iiss", $blogId, $outputOrder, $type, $content);
 
     $stmt->execute();
 
@@ -72,14 +72,14 @@ function addBlogComponent(mysqli $conn, int $blogId, string $type, string $conte
 
 function getBlogComponents(mysqli $conn, int $blogId)
 {
-    $result = $conn->query("SELECT id, blogId, type, content FROM Components WHERE blogId=$blogId");
+    $result = $conn->query("SELECT id, blogId, outputOrder, type, content FROM Components WHERE blogId=$blogId");
 
     return $result;
 }
 
 function getBlogById(mysqli $conn, int $id)
 {
-    $stmt = $conn->prepare("SELECT id, userId, title, subTitle, body, tags FROM Blogs where id=? LIMIT 1");
+    $stmt = $conn->prepare("SELECT id, userId, title, shortDescription, tags FROM Blogs where id=? LIMIT 1");
 
     $stmt->bind_param('i', $id);
     $stmt->execute();
@@ -91,7 +91,7 @@ function getBlogById(mysqli $conn, int $id)
 
 function getBlogs(mysqli $conn, int $amount)
 {
-    $result = $conn->query("SELECT id, userId, title, subTitle, body, tags FROM Blogs LIMIT $amount");
+    $result = $conn->query("SELECT id, userId, title, shortDescription, tags FROM Blogs LIMIT $amount");
 
     return $result;
 }

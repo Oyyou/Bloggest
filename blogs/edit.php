@@ -1,5 +1,7 @@
 <?php
 
+$uploadPath = "/uploads/";
+
 include("../components/header.php");
 include("../components/nav.php");
 
@@ -11,8 +13,7 @@ $unauthorizedBlog = false;
 
 $userId = "";
 $title = "";
-$subTitle = "";
-$body = "";
+$shortDescription = "";
 $tags = "";
 $componentList = array();
 
@@ -25,8 +26,7 @@ if ($blogId) {
     if ($blog) {
         $userId = $blog->userId;
         $title = $blog->title;
-        $subTitle = $blog->subTitle;
-        $body = $blog->body;
+        $shortDescription = $blog->shortDescription;
         $tags = $blog->tags;
         $foundBlog = true;
 
@@ -35,7 +35,7 @@ if ($blogId) {
         if ($components->num_rows > 0) {
             while ($component = $components->fetch_assoc()) {
                 if ($component) {
-                    $component["content"] = "data:image/jpg;charset=utf8;base64," . base64_encode($component["content"]);
+                    $component["content"] = $uploadPath . $component["content"];
                     array_push($componentList, $component);
                 }
             }
@@ -67,19 +67,18 @@ if ($blogId) {
 
 <?php
 extract($_POST);
-if (isset($_POST["title"]) && isset($_POST["body"]) && isset($blogId)) {
+if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId)) {
 
     $conn = getConnection();
 
     $userId = $_SESSION["id"];
     $title = $_POST["title"];
-    $subTitle = $_POST["subtitle"];
-    $body = $_POST["body"];
+    $shortDescription = $_POST["shortDescription"];
     $tags = $_POST["tags"];
 
     if (isset($_POST['submit'])) {
 
-        $query = "UPDATE Blogs SET title=?, subTitle=?, body=?, tags=? WHERE id=?";
+        $query = "UPDATE Blogs SET title=?, shortDescription=?, tags=? WHERE id=?";
         $stmt = $conn->prepare($query);
 
         if ($stmt === false) {
@@ -87,7 +86,7 @@ if (isset($_POST["title"]) && isset($_POST["body"]) && isset($blogId)) {
             return;
         }
 
-        $stmt->bind_param("ssssi", $title, $subTitle, $body, $tags, $blogId);
+        $stmt->bind_param("sssi", $title, $shortDescription, $tags, $blogId);
 
         $stmt->execute();
 

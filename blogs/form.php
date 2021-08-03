@@ -32,20 +32,20 @@ function utf8ize($d)
             <?php foreach ($componentList as $component) : ?>
 
                 var data = JSON.parse(`<?php echo json_encode(($component)); ?>`);
-                addComponent(data);
+                addImageComponent(data);
 
             <?php endforeach; ?>
         <?php endif; ?>
     })
 
-    const addComponent = (component) => {
+    const getControlsDiv = (id, type) => {
 
         const getButtonControl = (a, b, f) => {
 
             const removeButton = document.createElement('div');
             removeButton.className = "button " + b;
 
-            const buttonContent = document.createElement('p');
+            const buttonContent = document.createElement('span');
             buttonContent.innerHTML = a;
 
             buttonContent.addEventListener('click', (e) => {
@@ -61,44 +61,11 @@ function utf8ize($d)
             return removeButton;
         }
 
-        let id = createUUID();
-
-        const parentDiv = document.createElement('div');
-        parentDiv.className = "form-addtional component";
-        parentDiv.id = id;
-
         const controlsDiv = document.createElement('div');
         controlsDiv.className = "form-controls";
 
-        const childDiv = document.createElement("div");
-        childDiv.className = "component-body"
-
-        const imageElement = document.createElement("img");
-        imageElement.src = component ? component.content : "";
-
-        const imageInput = document.createElement('input');
-        imageInput.type = "file";
-        imageInput.accept = "image/*";
-        imageInput.name = "images[]";
-        imageInput.id = "image-" + id;
-        imageInput.style = "display:none;";
-
-        imageInput.addEventListener('change', (e) => {
-            var reader = new FileReader();
-            reader.onload = function() {
-                imageElement.src = reader.result;
-            }
-            reader.readAsDataURL(e.target.files[0]);
-        })
-
-        const imageLabel = document.createElement('label');
-        imageLabel.htmlFor = imageInput.id;
-        imageLabel.innerHTML = "Select image";
-        imageLabel.style = "cursor:pointer; width:fit-content";
-
-        childDiv.appendChild(imageElement);
-        childDiv.appendChild(imageInput);
-        childDiv.appendChild(imageLabel);
+        const typeText = document.createElement('p');
+        typeText.innerHTML = type;
 
         const removeButton = getButtonControl('X', 'remove', (value) => {
             document.getElementById("component-list").removeChild(value);
@@ -109,7 +76,7 @@ function utf8ize($d)
             const parent = value.parentNode;
             const collection = parent.children;
 
-            let obj;
+            let obj = null;
             for (let i = 0; i < collection.length; i++) {
                 const current = collection[i];
 
@@ -123,7 +90,9 @@ function utf8ize($d)
 
                 obj = current;
             }
-            parent.insertBefore(value, obj);
+            if (obj) {
+                parent.insertBefore(value, obj);
+            }
         });
 
         const moveDownButton = getButtonControl("↓", "move-down", (value) => {
@@ -131,7 +100,7 @@ function utf8ize($d)
             const parent = value.parentNode;
             const collection = parent.children;
 
-            let obj;
+            let obj = null;
             for (let i = collection.length - 1; i > 0; i--) {
                 const current = collection[i];
 
@@ -145,13 +114,94 @@ function utf8ize($d)
 
                 obj = current;
             }
-            parent.insertBefore(obj, value);
+            if (obj) {
+                parent.insertBefore(obj, value);
+            }
         });
 
+
+
+        controlsDiv.appendChild(typeText);
         controlsDiv.appendChild(moveUpButton);
         controlsDiv.appendChild(moveDownButton);
         controlsDiv.appendChild(removeButton);
+
+        return controlsDiv;
+    }
+
+    const getBaseComponent = (dbComponent, id, title) => {
+
+        const parentDiv = document.createElement('div');
+        parentDiv.className = "form-addtional component";
+        parentDiv.id = id;
+
+        controlsDiv = getControlsDiv(id, title);
+
         parentDiv.appendChild(controlsDiv);
+
+        return parentDiv;
+    }
+
+    const addImageComponent = (component) => {
+
+        let id = createUUID();
+
+        const childDiv = document.createElement("div");
+        childDiv.className = "component-body"
+
+        const imageElement = document.createElement("img");
+        imageElement.name = "components[]";
+        if (component && component.content.length > 0) {
+            imageElement.style = "width: 240px; height: 240px;";
+            imageElement.src = component.content;
+        }
+
+        const imageInput = document.createElement('input');
+        imageInput.type = "file";
+        imageInput.accept = "image/*";
+        imageInput.name = "components[]";
+        imageInput.id = "image-" + id;
+        //imageInput.style = "display:none;";
+        imageInput.required = 'required';
+
+        imageInput.addEventListener('change', (e) => {
+            var reader = new FileReader();
+            reader.onload = function() {
+                imageElement.src = reader.result;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        });
+
+        const imageLabel = document.createElement('label');
+        imageLabel.htmlFor = imageInput.id;
+        imageLabel.innerHTML = "Select image";
+        imageLabel.style = "cursor:pointer; width:fit-content";
+        imageLabel.required = 'required';
+
+        childDiv.appendChild(imageElement);
+        childDiv.appendChild(imageInput);
+        //childDiv.appendChild(imageLabel);
+
+        const parentDiv = getBaseComponent(component, id, "Image component");
+        parentDiv.appendChild(childDiv);
+
+        document.getElementById("component-list").appendChild(parentDiv);
+    };
+
+    const addTextareaComponent = (component) => {
+
+        let id = createUUID();
+
+        const childDiv = document.createElement("div");
+        childDiv.className = "component-body"
+
+        const textareaElement = document.createElement("textarea");
+        textareaElement.required = 'required';
+        textareaElement.name = "components[]";
+
+        childDiv.appendChild(textareaElement);
+
+        const parentDiv = getBaseComponent(component, id, "Textarea component");
         parentDiv.appendChild(childDiv);
 
         document.getElementById("component-list").appendChild(parentDiv);
@@ -166,8 +216,8 @@ function utf8ize($d)
 <div class="blog-form-container">
     <div class="form-side-panel">
         <h2>Options:</h2>
-        <button id="addImage">Add Image</button>
         <button id="addTextarea">Add Textarea</button>
+        <button id="addImage">Add Image</button>
     </div>
     <form method="post" class="blog-form" id="submit" enctype="multipart/form-data">
         <div class="form-body" id="blog-form">
@@ -175,19 +225,14 @@ function utf8ize($d)
             <input type="text" id="title" name="title" required="required" value="<?= (isset($title) ? $title : "") ?>">
 
             <label for="shortDescription">Short description:</label>
-            <input type="text" id="shortDescription" name="shortDescription" value="<?= (isset($shortDescription) ? $shortDescription : "") ?>">
-
-            <div>
-                <label class="full-row" for="body">Body:</label>
-                <textarea class="full-row" id="body" name="body"><?= (isset($body) ? $body : "") ?></textarea>
-            </div>
-
-            <label for="tags">Tags (split by comma):</label>
-            <input type="text" id="tags" name="tags" value="<?= (isset($tags) ? $tags : "") ?>" ?>
+            <input type="text" id="shortDescription" name="shortDescription" required="required" value="<?= (isset($shortDescription) ? $shortDescription : "") ?>">
 
             <div id="component-list" class="component-list">
 
             </div>
+
+            <label for="tags">Tags (split by comma):</label>
+            <input type="text" id="tags" name="tags" value="<?= (isset($tags) ? $tags : "") ?>" ?>
 
             <input id="submit" class="button" type="submit" name="submit" value="Save">
         </div>
@@ -195,5 +240,6 @@ function utf8ize($d)
 </div>
 
 <script>
-    $("#addImage").click(() => addComponent(null));
+    $("#addImage").click(() => addImageComponent(null));
+    $("#addTextarea").click(() => addTextareaComponent(null));
 </script>

@@ -5,8 +5,8 @@
   "author": "Niall Lewin",
   "scripts": {
     "scss": "node-sass --watch styles -o css --output-style compressed",
-    "clean": "@powershell Remove-Item D:\\wamp64\\www\\* -Recurse -Force",
-    "copy": "@powershell Copy-Item -Path * -Exclude ('node_modules', 'styles') -Destination D:\\wamp64\\www -Force -Recurse",
+    "clean": "node clean.js",
+    "copy": "@powershell Copy-Item -Path * -Exclude ('node_modules', 'styles', '.git') -Destination D:\\wamp64\\www -Force -Recurse",
     "cleancopy": "npm run clean && npm run copy"
   },
   "dependencies": {
