@@ -157,28 +157,37 @@ function utf8ize($d)
 
         const imageInput = document.createElement('input');
         imageInput.type = "file";
+        imageInput.name = "files[]";
         imageInput.accept = "image/*";
         imageInput.id = "image-" + id;
         //imageInput.style = "display:none;";
         imageInput.required = 'required';
+
+        const imageLabel = document.createElement('input');
+        imageLabel.type = "hidden";
+        //imageLabel.htmlFor = imageInput.id;
+        //imageLabel.innerHTML = "Select image";
+        imageLabel.style = "display: none;";
+        imageLabel.name = "components[]";
 
         imageInput.addEventListener('change', (e) => {
             var reader = new FileReader();
             reader.onload = function() {
                 imageElement.src = reader.result;
             }
-            reader.readAsDataURL(e.target.files[0]);
-        });
 
-        const imageLabel = document.createElement('label');
-        imageLabel.htmlFor = imageInput.id;
-        imageLabel.innerHTML = "Select image";
-        imageLabel.style = "cursor:pointer; width:fit-content";
-        imageLabel.required = 'required';
+            const file = e.target.files[0];
+
+            reader.readAsDataURL(file);
+            imageLabel.value = JSON.stringify({
+                type: "image",
+                value: file.name,
+            });
+        });
 
         childDiv.appendChild(imageElement);
         childDiv.appendChild(imageInput);
-        //childDiv.appendChild(imageLabel);
+        childDiv.appendChild(imageLabel);
 
         const parentDiv = getBaseComponent(component, id, "Image component");
         parentDiv.appendChild(childDiv);
@@ -195,9 +204,24 @@ function utf8ize($d)
 
         const textareaElement = document.createElement("textarea");
         textareaElement.required = 'required';
-        textareaElement.name = "components[]";
+        //textareaElement.name = "components[]";
+
+        const label = document.createElement('input');
+        label.type = "hidden";
+        //label.htmlFor = imageInput.id;
+        //label.innerHTML = "Select image";
+        label.style = "display: none;";
+        label.name = "components[]";
+
+        textareaElement.addEventListener('change', (e) => {
+            label.value = JSON.stringify({
+                type: "textarea",
+                value: e.target.value,
+            });
+        });
 
         childDiv.appendChild(textareaElement);
+        childDiv.appendChild(label);
 
         const parentDiv = getBaseComponent(component, id, "Textarea component");
         parentDiv.appendChild(childDiv);

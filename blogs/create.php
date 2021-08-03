@@ -10,7 +10,12 @@ include("../components/footer.php");
 extract($_POST);
 if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDescription"])) {
 
+    //$componentValues = $_POST["components"];
+
+    //var_dump($componentValues);
+    //var_dump(json_decode($componentValues[0]));
     var_dump($_POST);
+    var_dump($_FILES);
 
     include("../database.php");
     include("../php-functions.php");
@@ -24,6 +29,8 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
     if (isset($_POST['submit'])) {
 
         $allImagesSet = true;
+
+        exit;
 
         if (isset($_FILES["images"])) {
             foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
@@ -41,8 +48,6 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
                 }
             }
         }
-
-
 
         if ($allImagesSet) {
             $stmt = $conn->prepare("INSERT INTO Blogs (userId, title, shortDescription, tags) VALUES (?, ?, ?, ?)");
