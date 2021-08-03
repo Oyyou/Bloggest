@@ -150,7 +150,6 @@ function utf8ize($d)
         childDiv.className = "component-body"
 
         const imageElement = document.createElement("img");
-        imageElement.name = "components[]";
         if (component && component.content.length > 0) {
             imageElement.style = "width: 240px; height: 240px;";
             imageElement.src = component.content;
@@ -159,7 +158,6 @@ function utf8ize($d)
         const imageInput = document.createElement('input');
         imageInput.type = "file";
         imageInput.accept = "image/*";
-        imageInput.name = "components[]";
         imageInput.id = "image-" + id;
         //imageInput.style = "display:none;";
         imageInput.required = 'required';

@@ -24,8 +24,6 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
     if (isset($_POST['submit'])) {
 
         $allImagesSet = true;
-        
-        exit;
 
         if (isset($_FILES["images"])) {
             foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
