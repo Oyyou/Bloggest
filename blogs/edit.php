@@ -32,11 +32,18 @@ if ($blogId) {
 
         $components = getBlogComponents($conn, $blogId);
 
-        if ($components->num_rows > 0) {
-            while ($component = $components->fetch_assoc()) {
-                if ($component) {
-                    $component["content"] = $uploadPath . $component["content"];
-                    array_push($componentList, $component);
+        if ($components) {
+            if ($components->num_rows > 0) {
+                while ($component = $components->fetch_assoc()) {
+                    if ($component) {
+                        switch ($component["type"]) {
+                            case "image":
+                                $component["content"] = $uploadPath . $component["content"];
+                                break;
+                        }
+
+                        array_push($componentList, $component);
+                    }
                 }
             }
         }
@@ -90,6 +97,25 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
 
         $stmt->execute();
 
+        foreach ($_POST["components"] as $key => $component) {
+            $componentObj = json_decode($component);
+
+            $dbComponent = getBlogComponentByIds($conn, $blogId, $componentObj->uuid);
+
+            // If the component already exists in the db
+            if ($dbComponent) {
+                // Update existing component
+                updateBlogComponent($conn, $dbComponent->id, $key, $componentObj->value);
+            } else {
+                // Add new component
+                addBlogComponent($conn, $blogId, $componentObj->uuid, $key, $componentObj->type, $componentObj->value);
+            }
+
+            var_dump($dbComponent);
+        }
+
+        // Now we need to delete any components from the db that aren't in the '$_POST'
+
         //header("location: /dashboard");
     }
 
@@ -97,7 +123,7 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
 
 ?>
     <script type="text/javascript">
-        window.location = "/dashboard";
+        //window.location = "/dashboard";
     </script>
 <?php
 }

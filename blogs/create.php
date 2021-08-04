@@ -43,13 +43,14 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
             }
         }
 
-        if ($allImagesSet && 1 == 2) {
-            $stmt = $conn->prepare("INSERT INTO Blogs (userId, title, shortDescription, tags) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("isss", $userId, $title, $shortDescription, $tags);
+        $stmt = $conn->prepare("INSERT INTO Blogs (userId, title, shortDescription, tags) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isss", $userId, $title, $shortDescription, $tags);
 
-            $stmt->execute();
+        $stmt->execute();
 
-            $blogId = $conn->insert_id;
+        $blogId = $conn->insert_id;
+
+        if ($allImagesSet) {
 
             if (isset($_FILES["images"])) {
                 foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
@@ -67,11 +68,11 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
                     $uploadOk = 1;
                     if ($image_size !== false) {
 
-                        $addedBlogComponent = addBlogComponent($conn, $blogId, $key, "Image", $newFileName);
+                        //$addedBlogComponent = addBlogComponent($conn, $blogId, $key, "image", $newFileName);
 
-                        if (!$addedBlogComponent) {
-                            echo $addedBlogComponent->error;
-                        }
+                        //if (!$addedBlogComponent) {
+                        //    echo $addedBlogComponent->error;
+                        //}
 
                         $uploadOk = 1;
                     } else {
@@ -86,8 +87,9 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
 
         foreach ($_POST["components"] as $key => $component) {
             $compObj = json_decode($component);
-            
-            $addedBlogComponent = addBlogComponent($conn, $blogId, $key, $compObj->type, $compObj->value);
+            var_dump($compObj);
+
+            $addedBlogComponent = addBlogComponent($conn, $blogId, $compObj->uuid, $key, $compObj->type, str_replace(array("\n", "\r"), '', nl2br(htmlspecialchars($compObj->value))));
 
             if (!$addedBlogComponent) {
                 echo $addedBlogComponent->error;

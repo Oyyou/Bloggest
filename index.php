@@ -37,8 +37,9 @@ function getBlogHTML($blog)
 
 ?>
     <div class="blog-container-preview">
-        <h4><?php print $blog["title"] ?> - <?= $author->Username ?></h4>
-        <p><?php print $blog["body"] ?></p>
+        <h4><?php print $blog["title"] ?></h4>
+        <h5><a href="/user/<?= $author->Username ?>"><?= $author->Username ?></a></h5>
+        <p><?php print $blog["shortDescription"] ?></p>
     </div>
 <?php
 }

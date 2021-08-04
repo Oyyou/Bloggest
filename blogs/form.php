@@ -32,7 +32,17 @@ function utf8ize($d)
             <?php foreach ($componentList as $component) : ?>
 
                 var data = JSON.parse(`<?php echo json_encode(($component)); ?>`);
-                addImageComponent(data);
+                switch (data.type) {
+                    case "image":
+                        addImageComponent(data);
+                        break;
+                    case "textarea":
+                        addTextareaComponent(data);
+                        break;
+                    default:
+                        console.log("Oop");
+                        break;
+                }
 
             <?php endforeach; ?>
         <?php endif; ?>
@@ -150,10 +160,6 @@ function utf8ize($d)
         childDiv.className = "component-body"
 
         const imageElement = document.createElement("img");
-        if (component && component.content.length > 0) {
-            imageElement.style = "width: 240px; height: 240px;";
-            imageElement.src = component.content;
-        }
 
         const imageInput = document.createElement('input');
         imageInput.type = "file";
@@ -182,12 +188,27 @@ function utf8ize($d)
             imageLabel.value = JSON.stringify({
                 type: "image",
                 value: file.name,
+                uuid: id,
             });
         });
 
         childDiv.appendChild(imageElement);
-        childDiv.appendChild(imageInput);
+
+        if (component && component.content.length > 0) {
+            imageElement.style = "width: 240px; height: 240px;";
+            imageElement.src = component.content;
+
+            imageLabel.value = JSON.stringify({
+                type: "image",
+                value: component.content,
+                uuid: component.uuid,
+            });
+        } else {
+            // Don't give an option of changing the image on edit
+            childDiv.appendChild(imageInput);
+        }
         childDiv.appendChild(imageLabel);
+
 
         const parentDiv = getBaseComponent(component, id, "Image component");
         parentDiv.appendChild(childDiv);
@@ -217,8 +238,18 @@ function utf8ize($d)
             label.value = JSON.stringify({
                 type: "textarea",
                 value: e.target.value,
+                uuid: id,
             });
         });
+
+        if (component) {
+            textareaElement.innerHTML = component.content;
+            label.value = JSON.stringify({
+                type: "textarea",
+                value: component.content,
+                uuid: component.uuid,
+            });
+        }
 
         childDiv.appendChild(textareaElement);
         childDiv.appendChild(label);

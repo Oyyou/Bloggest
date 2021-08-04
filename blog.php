@@ -1,24 +1,31 @@
 <?php
 $foundBlog = false;
+$foundComponents = false;
 $foundAuthor = false;
 $blog = null;
 $author = null;
 
 $params = explode("/", $_SERVER["REQUEST_URI"]);
-$blodId = end($params);
+$blogId = end($params);
+$components = array();
 //var_dump($blodId);
 //var_dump($_GET);
 //var_dump($_SERVER);
 //var_dump($_REQUEST);
 
-if ($blodId) {
+if ($blogId) {
     include("database.php");
     $conn = getConnection();
-    $blog = getBlogById($conn, $blodId);
+    $blog = getBlogById($conn, $blogId);
 
     if ($blog) {
         $foundBlog = true;
+        $components = getBlogComponents($conn, $blogId);
         $author = getUserById($conn, $blog->userId);
+
+        if ($components) {
+            $foundComponents = true;
+        }
 
         if ($author) {
             $foundAuthor = true;
@@ -78,6 +85,17 @@ if ($blodId) {
                 </div>
             </div>
             <div class="blog-body-container">
+                <?php while ($component = $components->fetch_assoc()) {
+                    switch ($component["type"]) {
+                        case "image";
+                            getImageComponentContainer($component);
+                            break;
+                        case "textarea";
+                            getTextComponentContainer($component);
+                            break;
+                    }
+                }
+                ?>
                 <?php
                 /*$dom = new DOMDocument();
 
@@ -88,9 +106,7 @@ if ($blodId) {
                 print $dom->saveXML($dom->documentElement);*/
                 ?>
             </div>
-            <div class="blog-tags-container">
-                <p><?= $blog->tags ?></p>
-            </div>
+            <?= getTagsContainer($blog->tags) ?>
             <div class="blog-comments-container">
                 <div class="add-comment-container">
 
@@ -107,7 +123,48 @@ if ($blodId) {
 
 <?php include("components/footer.php"); ?>
 
+<?php
+function getImageComponentContainer($component)
+{
+?>
+    <div class="component-container image-container">
+        <img src="/uploads/<?= $component["content"] ?>">
+    </div>
+
+<?php
+}
+function getTextComponentContainer($component)
+{
+?>
+    <div class="component-container text-container">
+        <p><?= $component["content"] ?></p>
+    </div>
+
+<?php
+}
+
+function getTagsContainer($tags)
+{
+    if (!$tags) return;
+
+    $newTags = array_map('trim', explode(",", $tags));
+?>
+
+    <div class="tags-container">
+        <?php foreach ($newTags as $tag) : ?>
+            <span><?= $tag ?></span>
+        <?php endforeach; ?>
+    </div>
+
+<?php
+}
+?>
+
 <script>
+    const getComponentContainer = (component) => {
+
+    }
+
     $('#share-button').click(function(event) {
         event.stopPropagation();
         toggleShareDropdown();
