@@ -75,7 +75,7 @@ function addBlogComponent(mysqli $conn, int $blogId, string $uuid, int $outputOr
 
 function getBlogComponents(mysqli $conn, int $blogId)
 {
-    $result = $conn->query("SELECT id, uuid, blogId, outputOrder, type, content FROM Components WHERE blogId=$blogId");
+    $result = $conn->query("SELECT id, uuid, blogId, outputOrder, type, content FROM Components WHERE blogId=$blogId ORDER BY outputOrder");
 
     return $result;
 }
