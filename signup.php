@@ -48,9 +48,6 @@ if (isset($_POST["username"]) && isset($_POST["email"]) && isset($_POST["passwor
     $emailUser = getUserbyName($conn, $username);
     $emailEmail = getUserbyEmail($conn, $email);
 
-    //var_dump($emailUser);
-    //var_dump($emailEmail);
-
     if (!empty($emailEmail)) {
         echo "Email exists!";
         exit;

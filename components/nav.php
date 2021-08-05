@@ -14,7 +14,7 @@ if (isset($_SESSION["loggedin"])) {
         <li><a href="/">Bloggest</a></li>
     </ul>
     <ul class="nav-ul nav-right">
-        <li><a href="/randomBlog">Random blog</a></li>
+        <li><a href="/randomPost">Random post</a></li>
         <?php if ($loggedIn) : ?>
             <li><a href="/dashboard">Dashboard</a></li>
             <li><a href="/logout">Sign out</a></li>

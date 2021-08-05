@@ -15,7 +15,7 @@ $conn->close();
     <p>Here at <b>Bloggest</b> we strive to make it as easy as possible for our users to share their opinion</p>
     <?php if ($blogs->num_rows) : ?>
         <div class="recent-blogs-container">
-            <h3>Recent blogs</h3>
+            <h3>Recent posts</h3>
             <div class="recent-blogs-list">
                 <?php while ($blog = $blogs->fetch_assoc()) {
                     getBlogHTML($blog);
