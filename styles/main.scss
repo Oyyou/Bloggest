@@ -470,3 +470,22 @@ a {
         grid-column: 2;
     }
 }
+
+.form-deleting {
+    h1 {
+        margin-bottom: 15px;
+    }
+    div {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+
+        p {
+            margin: auto 0;
+        }
+
+        input {
+            margin-left: 10px;
+        }
+    }
+}

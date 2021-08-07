@@ -181,7 +181,6 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
 
         $dbComponents = getBlogComponents($conn, $blogId);
         foreach ($dbComponents as $component) {
-            continue;
             if (!in_array($component["uuid"], $usedUUIDs)) {
                 deleteBlogComponent($conn, $component["id"]);
             }
@@ -196,7 +195,7 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
 
 ?>
     <script type="text/javascript">
-        //window.location = "/dashboard";
+        window.location = "/post/" + <?= $blogId ?>;
     </script>
 <?php
 }

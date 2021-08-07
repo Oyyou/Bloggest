@@ -99,10 +99,15 @@ function updateBlogComponent(mysqli $conn, int $id, int $outputOrder, string $co
     $stmt->execute();
 }
 
-function deleteBlogComponent(mysqli $conn, int $id) {
-    
+function deleteBlogComponent(mysqli $conn, int $id) {    
     $stmt = $conn->prepare("DELETE FROM components WHERE Id=?");
     $stmt->bind_param("i",$id);
+    $stmt->execute();
+}
+
+function deleteBlogById(mysqli $conn, int $id) {    
+    $stmt = $conn->prepare("DELETE FROM blogs WHERE Id=?");
+    $stmt->bind_param("i", $id);
     $stmt->execute();
 }
 

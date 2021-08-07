@@ -27,7 +27,7 @@
                         <?php while ($row = $result->fetch_assoc()) { ?>
 
                             <p class="col-1"><?php print $row["title"] ?></p>
-                            <p class="col-2"><a href=<?= "/post/" . $row["id"] ?>>View</a> | <a href=<?= "/posts/edit/" . $row["id"] ?>>Edit</a></p>
+                            <p class="col-2"><a href=<?= "/post/" . $row["id"] ?>>View</a> | <a href=<?= "/posts/edit/" . $row["id"] ?>>Edit</a> | <a href=<?= "/posts/delete/" . $row["id"] ?>>Delete</a></p>
                         <?php } ?>
                     </div>
                 <?php
