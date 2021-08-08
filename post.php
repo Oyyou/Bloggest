@@ -1,4 +1,10 @@
 <?php
+$pageTitle = null;
+$pageDescription = null;
+$pageAuthor = null;
+$pageType = "article";
+$additionalHeaders = array();
+
 $foundBlog = false;
 $foundComponents = false;
 $foundAuthor = false;
@@ -19,13 +25,31 @@ if ($blogId) {
         $components = getBlogComponents($conn, $blogId);
         $author = getUserById($conn, $blog->userId);
 
+        $pageTitle = $blog->title;
+        $pageDescription = $blog->shortDescription;
+
         if ($components) {
             $foundComponents = true;
         }
 
         if ($author) {
             $foundAuthor = true;
+            $pageAuthor = $author->Username;
         }
+
+        array_push($additionalHeaders, [
+            'property' => "article:author",
+            'content' => $pageAuthor,
+        ], [
+            'property' => "article:tag",
+            'content' => "",
+        ], [
+            'property' => "article:published_time",
+            'content' => "",
+        ], [
+            'property' => "article:modified_time ",
+            'content' => "",
+        ]);
     }
 
     $conn->close();

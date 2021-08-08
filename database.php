@@ -57,7 +57,7 @@ function addNewUser(mysqli $conn, string $username, string $email, string $hased
     }
 
     return false;
-    // $stmt->error;    
+    // $stmt->error;
 }
 
 function addBlogComponent(mysqli $conn, int $blogId, string $uuid, int $outputOrder, string $type, string $content): mysqli_stmt
