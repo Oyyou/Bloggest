@@ -105,7 +105,7 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
             }
         }
 
-        $query = "UPDATE Blogs SET title=?, shortDescription=?, tags=? WHERE id=?";
+        $query = "UPDATE Blogs SET title=?, shortDescription=?, modifiedTime=?, tags=? WHERE id=?";
         $stmt = $conn->prepare($query);
 
         if ($stmt === false) {
@@ -113,7 +113,8 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
             return;
         }
 
-        $stmt->bind_param("sssi", $title, $shortDescription, $tags, $blogId);
+        $date = date('Y-m-d H:i:s');
+        $stmt->bind_param("ssssi", $title, $shortDescription, $date, $tags, $blogId);
 
         $stmt->execute();
         $newImageNames = array();

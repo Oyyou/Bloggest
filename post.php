@@ -1,4 +1,6 @@
 <?php
+$actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]";
+
 $pageTitle = null;
 $pageDescription = null;
 $pageAuthor = null;
@@ -39,7 +41,7 @@ if ($blogId) {
 
         array_push($additionalHeaders, [
             'property' => "article:author",
-            'content' => $pageAuthor,
+            'content' => $actual_link . '/user/' . $pageAuthor,
         ], [
             'property' => "article:tag",
             'content' => "",
