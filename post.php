@@ -178,15 +178,19 @@ function getSectionComponentContainer($component)
     <div class="component-container">
         <?php while ($componentItem = $componentItems->fetch_assoc()) {
 
-            switch($componentItem["type"]) {
+            $result = '';
+
+            switch ($componentItem["type"]) {
                 case "title":
-                    ?><h3><?= $componentItem["content"] ?></h3><?php
-                break;
+                    $result = '<h3>' . $componentItem["content"] . '</h3>';
+                    break;
 
                 case "body":
-                    ?><p><?= $componentItem["content"] ?></p><?php
-                break;
+                    $result = '<p>' . $componentItem["content"] . '</p>';
+                    break;
             }
+
+            echo $result;
         }
         ?>
     </div>
