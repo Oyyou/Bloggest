@@ -42,17 +42,17 @@ if ($blogId) {
 
 <div class="container blog-container">
     <?php if ($unauthorizedBlog) : ?>
-        <h1>Slow down there, champ. This isn't your blog! You've gotta get outta here</h1>
+        <h2>Slow down there, champ. This isn't your blog! You've gotta get outta here</h2>
     <?php elseif ($foundBlog) : ?>
         <form method="post" id="submit" class="form-deleting">
-            <h1>Deleting post: <?= $title ?></h1>
+            <h2>Deleting post: <?= $title ?></h2>
             <div>
                 <p>Once you delete this post it'll be gone forever. Are you sure?</p>
                 <input id="submit" name="submit" type="submit" value="Yes">
             </div>
         </form>
     <?php else : ?>
-        <h1>Sorry, friend. The blog you're looking for no longer (or maybe never did..!) exist. Please move along</h1>
+        <h2>Sorry, friend. The blog you're looking for no longer (or maybe never did..!) exist. Please move along</h2>
     <?php endif; ?>
 </div>
 
@@ -61,10 +61,11 @@ if ($blogId) {
 <?php
 extract($_POST);
 if (isset($_POST["submit"])) {
-    var_dump("Hello");
 
     $conn = getConnection();
     deleteBlogById($conn, $blogId);
+    deletePostComponentsByBlogId($conn, $blogId);
+    deletePostComponentItemsByBlogId($conn, $blogId);
     $conn->close();
 
 ?>

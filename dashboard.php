@@ -1,15 +1,19 @@
+<?php
+$pageTitle = "Dashboard";
+?>
+
 <?php include("components/header.php"); ?>
 <?php include("components/nav.php"); ?>
 <div class="container dashboard-container">
     <?php if (isset($_SESSION["loggedin"])) : ?>
-        <h1>
+        <h2>
             Welcome to your dashboard, <?= $_SESSION["user"]; ?>.
-        </h1>
-        <h2>How can we help you today?</h2>
-        <h3><a href="/posts/create">Create a post</a></h3>
+        </h2>
+        <p>How can we help you today?</p>
+        <p><a href="/posts/create">Create a post</a></p>
 
         <div class="dashboard-body">
-            <h4>Recent posts</h4>
+            <h3>Recent posts</h3>
             <div class="blog-list">
                 <?php
                 include("database.php");
@@ -37,7 +41,7 @@
             </div>
         </div>
     <?php else : ?>
-        <h1>You shouldn't be here =)</h1>
+        <h2>You shouldn't be here =)</h2>
     <?php endif; ?>
 
 </div>

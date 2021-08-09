@@ -60,11 +60,11 @@ if ($blogId) {
 
 <?php include("components/header.php"); ?>
 <?php include("components/nav.php"); ?>
-<div class="container">
-    <div class="blog-container">
+<main class="container">
+    <article class="blog-container">
         <?php if ($foundBlog) : ?>
             <div class="blog-header-container">
-                <h1><?= $blog->title ?></h1>
+                <h2><?= $blog->title ?></h2>
             </div>
             <div class="blog-author-container">
                 <div class="blog-author-name">
@@ -115,6 +115,9 @@ if ($blogId) {
                         case "textarea";
                             getTextComponentContainer($component);
                             break;
+                        case "component":
+                            getSectionComponentContainer($component);
+                            break;
                     }
                 }
                 ?>
@@ -138,10 +141,10 @@ if ($blogId) {
                 </div>
             </div>
         <?php else : ?>
-            <h1>Sorry, friend. The post you're looking for no longer (or maybe never did..!) exist. Please move along</h1>
+            <h2>Sorry, friend. The post you're looking for no longer (or maybe never did..!) exist. Please move along</h2>
         <?php endif; ?>
-    </div>
-</div>
+    </article>
+</main>
 
 <?php include("components/footer.php"); ?>
 
@@ -162,6 +165,31 @@ function getTextComponentContainer($component)
         <p><?= $component["content"] ?></p>
     </div>
 
+<?php
+}
+
+function getSectionComponentContainer($component)
+{
+    $conn = getConnection();
+    $componentItems = getPostComponentItems($conn, $component["id"]);
+    $conn->close();
+
+?>
+    <div class="component-container">
+        <?php while ($componentItem = $componentItems->fetch_assoc()) {
+
+            switch($componentItem["type"]) {
+                case "title":
+                    ?><h3><?= $componentItem["content"] ?></h3><?php
+                break;
+
+                case "body":
+                    ?><p><?= $componentItem["content"] ?></p><?php
+                break;
+            }
+        }
+        ?>
+    </div>
 <?php
 }
 

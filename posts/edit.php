@@ -60,14 +60,14 @@ if ($blogId) {
 
 <div class="container blog-container">
     <?php if ($unauthorizedBlog) : ?>
-        <h1>Slow down there, champ. This isn't your blog! You've gotta get outta here</h1>
+        <h2>Slow down there, champ. This isn't your blog! You've gotta get outta here</h2>
     <?php elseif ($foundBlog) : ?>
         <?php
         $blogTitle = "Editing post";
         include("form.php");
         ?>
     <?php else : ?>
-        <h1>Sorry, friend. The blog you're looking for no longer (or maybe never did..!) exist. Please move along</h1>
+        <h2>Sorry, friend. The blog you're looking for no longer (or maybe never did..!) exist. Please move along</h2>
     <?php endif; ?>
 </div>
 
@@ -131,9 +131,6 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
                     $newFileName = generateRandomString() . "." . $ext;
 
                     $target_file = $uploadPath . $newFileName;
-
-                    var_dump($file_tmp);
-                    var_dump($target_file);
 
                     move_uploaded_file($file_tmp, $target_file);
 

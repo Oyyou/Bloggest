@@ -10,9 +10,8 @@ $conn->close();
 <?php include("components/header.php"); ?>
 <?php include("components/nav.php"); ?>
 <div class="container home-container">
-    <h1>Welcome to Bloggest!</h1>
-    <h2>The biggest* blogger site in existence</h2>
-    <p>Here at <b>Bloggest</b> we strive to make it as easy as possible for our users to share their opinion</p>
+    <h2>Welcome to Bloggest!</h2>
+    <p>For blogging</p>
     <?php if ($blogs->num_rows) : ?>
         <div class="recent-blogs-container">
             <h3>Recent posts</h3>
@@ -23,7 +22,6 @@ $conn->close();
             </div>
         </div>
     <?php endif; ?>
-    <p class="small-print">* That is a lie</p>
 </div>
 <?php include("components/footer.php"); ?>
 
@@ -38,8 +36,8 @@ function getBlogHTML($blog)
 ?>
     <div class="blog-container-preview">
         <h4><?php print $blog["title"] ?></h4>
-        <h5><a href="/user/<?= $author->Username ?>"><?= $author->Username ?></a></h5>
         <p><?php print $blog["shortDescription"] ?></p>
+        <p><a href="/user/<?= $author->Username ?>"><?= $author->Username ?></a></p>
     </div>
 <?php
 }

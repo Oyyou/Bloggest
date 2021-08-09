@@ -73,6 +73,26 @@ function addBlogComponent(mysqli $conn, int $blogId, string $uuid, int $outputOr
     return $stmt;
 }
 
+function addPostComponentItem(mysqli $conn, int $blogId, int $componentId, string $uuid, int $outputOrder, string $type, string $content)
+{
+    $prepared = $stmt = $conn->prepare("INSERT INTO ComponentItems (blogId, componentId, uuid, outputOrder, type, content) VALUES (?, ?, ?, ?, ?, ?)");
+    if (!$prepared) {
+        echo $conn->error;
+    }
+    $stmt->bind_param("iisiss", $blogId, $componentId, $uuid, $outputOrder, $type, $content);
+
+    $stmt->execute();
+
+    return $stmt;
+}
+
+function getPostComponentItems(mysqli $conn, int $componentId)
+{
+    $result = $conn->query("SELECT id, uuid, componentId, outputOrder, type, content FROM ComponentItems WHERE componentId=$componentId ORDER BY outputOrder");
+
+    return $result;
+}
+
 function getBlogComponents(mysqli $conn, int $blogId)
 {
     $result = $conn->query("SELECT id, uuid, blogId, outputOrder, type, content FROM Components WHERE blogId=$blogId ORDER BY outputOrder");
@@ -92,20 +112,37 @@ function getBlogComponentByIds(mysqli $conn, int $blogId, string $uuid)
     return $value;
 }
 
-function updateBlogComponent(mysqli $conn, int $id, int $outputOrder, string $content) {
-    
+function updateBlogComponent(mysqli $conn, int $id, int $outputOrder, string $content)
+{
+
     $stmt = $conn->prepare("UPDATE components SET outputOrder=?, content=? WHERE id=?");
     $stmt->bind_param("isi", $outputOrder, $content, $id);
     $stmt->execute();
 }
 
-function deleteBlogComponent(mysqli $conn, int $id) {    
+function deleteBlogComponent(mysqli $conn, int $id)
+{
     $stmt = $conn->prepare("DELETE FROM components WHERE Id=?");
-    $stmt->bind_param("i",$id);
+    $stmt->bind_param("i", $id);
     $stmt->execute();
 }
 
-function deleteBlogById(mysqli $conn, int $id) {    
+function deletePostComponentsByBlogId(mysqli $conn, int $blogId)
+{
+    $stmt = $conn->prepare("DELETE FROM components WHERE BlogId=?");
+    $stmt->bind_param("i", $blogId);
+    $stmt->execute();
+}
+
+function deletePostComponentItemsByBlogId(mysqli $conn, int $blogId)
+{
+    $stmt = $conn->prepare("DELETE FROM componentItems WHERE BlogId=?");
+    $stmt->bind_param("i", $blogId);
+    $stmt->execute();
+}
+
+function deleteBlogById(mysqli $conn, int $id)
+{
     $stmt = $conn->prepare("DELETE FROM blogs WHERE Id=?");
     $stmt->bind_param("i", $id);
     $stmt->execute();

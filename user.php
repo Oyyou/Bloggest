@@ -24,9 +24,9 @@ if ($username) {
 <div class="container">
     <div class="user-container">
         <?php if ($foundUser) : ?>
-            <h1><?= $user->Username ?></h1>
+            <h2><?= $user->Username ?></h2>
         <?php else : ?>
-            <h1>Nope</h1>
+            <h2>Nope</h2>
         <?php endif; ?>
     </div>
 </div>

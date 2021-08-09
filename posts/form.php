@@ -48,7 +48,7 @@ function utf8ize($d)
         <?php endif; ?>
     })
 
-    const getControlsDiv = (id, type) => {
+    const getControlsDiv = (id, type, description) => {
 
         const getButtonControl = (a, b, f) => {
 
@@ -74,8 +74,19 @@ function utf8ize($d)
         const controlsDiv = document.createElement('div');
         controlsDiv.className = "form-controls";
 
-        const typeText = document.createElement('p');
-        typeText.innerHTML = type;
+        const controlsHeaderDiv = document.createElement('div');
+        controlsHeaderDiv.className = "form-controls-header";
+
+        const headerText = document.createElement('h3');
+        headerText.className = "form-controls-title"
+        headerText.innerHTML = type;
+
+        const descriptionText = document.createElement('p');
+        descriptionText.className = "form-controls-description"
+        descriptionText.innerHTML = description;
+
+        controlsHeaderDiv.appendChild(headerText);
+        controlsHeaderDiv.appendChild(descriptionText);
 
         const removeButton = getButtonControl('X', 'remove', (value) => {
             document.getElementById("component-list").removeChild(value);
@@ -129,9 +140,7 @@ function utf8ize($d)
             }
         });
 
-
-
-        controlsDiv.appendChild(typeText);
+        controlsDiv.appendChild(controlsHeaderDiv);
         controlsDiv.appendChild(moveUpButton);
         controlsDiv.appendChild(moveDownButton);
         controlsDiv.appendChild(removeButton);
@@ -139,18 +148,105 @@ function utf8ize($d)
         return controlsDiv;
     }
 
-    const getBaseComponent = (dbComponent, id, title) => {
+    const getBaseComponent = (dbComponent, id, title, description) => {
 
         const parentDiv = document.createElement('div');
         parentDiv.className = "form-addtional component";
         parentDiv.id = id;
 
-        controlsDiv = getControlsDiv(id, title);
+        controlsDiv = getControlsDiv(id, title, description);
 
         parentDiv.appendChild(controlsDiv);
 
         return parentDiv;
     }
+
+    const addSectionComponent = (component) => {
+
+        let id = createUUID();
+
+        const childDiv = document.createElement("div");
+        childDiv.className = "component-body"
+
+        const sectionTitle = document.createElement("input");
+        sectionTitle.required = 'required';
+
+        const titleLabel = document.createElement('input');
+        titleLabel.type = "hidden";
+        //textLabel.htmlFor = imageInput.id;
+        //textLabel.innerHTML = "Select image";
+        titleLabel.style = "display: none;";
+        titleLabel.name = "componentItems[]";
+
+        sectionTitle.addEventListener('change', (e) => {
+            titleLabel.value = JSON.stringify({
+                type: "title",
+                value: e.target.value,
+                uuid: id,
+            });
+        });
+
+        const textareaElement = document.createElement("textarea");
+        textareaElement.required = 'required';
+        //textareaElement.name = "components[]";
+
+        const paragraphLabel = document.createElement('input');
+        paragraphLabel.type = "hidden";
+        //paragraphLabel.htmlFor = imageInput.id;
+        //paragraphLabel.innerHTML = "Select image";
+        paragraphLabel.style = "display: none;";
+        paragraphLabel.name = "componentItems[]";
+
+        textareaElement.addEventListener('change', (e) => {
+            paragraphLabel.value = JSON.stringify({
+                type: "body",
+                value: e.target.value,
+                uuid: id,
+            });
+        });
+
+        const componentLabel = document.createElement('input');
+        componentLabel.type = "hidden";
+        //paragraphLabel.htmlFor = imageInput.id;
+        //paragraphLabel.innerHTML = "Select image";
+        componentLabel.style = "display: none;";
+        componentLabel.name = "components[]";
+        componentLabel.value = JSON.stringify({
+            type: "component",
+            value: "",
+            uuid: id,
+        });
+
+        if (component) {
+            textareaElement.innerHTML = component.content;
+            titleLabel.value = JSON.stringify({
+                type: "header",
+                value: component.content,
+                uuid: component.uuid,
+            });
+            paragraphLabel.value = JSON.stringify({
+                type: "paragraph",
+                value: component.content,
+                uuid: component.uuid,
+            });
+            componentLabel.value = JSON.stringify({
+                type: "component",
+                value: component.content,
+                uuid: component.uuid,
+            });
+        }
+
+        childDiv.appendChild(sectionTitle);
+        childDiv.appendChild(textareaElement);
+        childDiv.appendChild(titleLabel);
+        childDiv.appendChild(paragraphLabel);
+        childDiv.appendChild(componentLabel);
+
+        const parentDiv = getBaseComponent(component, id, "Section component", "Description text");
+        parentDiv.appendChild(childDiv);
+
+        document.getElementById("component-list").appendChild(parentDiv);
+    };
 
     const addImageComponent = (component) => {
 
@@ -210,7 +306,7 @@ function utf8ize($d)
         childDiv.appendChild(imageLabel);
 
 
-        const parentDiv = getBaseComponent(component, id, "Image component");
+        const parentDiv = getBaseComponent(component, id, "Image component", "Description text");
         parentDiv.appendChild(childDiv);
 
         document.getElementById("component-list").appendChild(parentDiv);
@@ -254,7 +350,7 @@ function utf8ize($d)
         childDiv.appendChild(textareaElement);
         childDiv.appendChild(label);
 
-        const parentDiv = getBaseComponent(component, id, "Textarea component");
+        const parentDiv = getBaseComponent(component, id, "Textarea component", "Description text");
         parentDiv.appendChild(childDiv);
 
         document.getElementById("component-list").appendChild(parentDiv);
@@ -262,17 +358,18 @@ function utf8ize($d)
 </script>
 
 <?php if (isset($blogTitle)) : ?>
-    <h1 class="blog-title">
+    <h2 class="post-title">
         <?= $blogTitle ?>
-    </h1>
+    </h2>
 <?php endif; ?>
 <div class="blog-form-container">
     <div class="form-side-panel">
-        <h2>Options:</h2>
+        <h3 class="form-side-panel-header">Options</h3>
+        <button class="addSection">Add Section</button>
         <button id="addTextarea">Add Textarea</button>
         <button id="addImage">Add Image</button>
     </div>
-    <form method="post" class="blog-form" id="submit" enctype="multipart/form-data">
+    <form method="post" class="blog-form" enctype="multipart/form-data">
         <div class="form-body" id="blog-form">
             <label for="title">Title:</label>
             <input type="text" id="title" name="title" required="required" value="<?= (isset($title) ? $title : "") ?>">
@@ -285,7 +382,7 @@ function utf8ize($d)
             </div>
 
             <label for="tags">Tags (split by comma):</label>
-            <input type="text" id="tags" name="tags" value="<?= (isset($tags) ? $tags : "") ?>" ?>
+            <input type="text" id="tags" name="tags" value="<?= (isset($tags) ? $tags : "") ?>">
 
             <input id="submit" class="button" type="submit" name="submit" value="Save">
         </div>
@@ -293,6 +390,7 @@ function utf8ize($d)
 </div>
 
 <script>
+    $(".addSection").click(() => addSectionComponent(null));
     $("#addImage").click(() => addImageComponent(null));
     $("#addTextarea").click(() => addTextareaComponent(null));
 </script>
