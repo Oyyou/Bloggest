@@ -92,52 +92,90 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
             return $e->uuid;
         }) : array();
 
-        foreach ($_POST["components"] as $key => $component) {
+        foreach ($groupedComponentItems as $groupKey => $group) {
+            //var_dump($key);
+            //var_dump($group['value']);
+            $uuid = $group['key'];
+            $components = $group['value'];
+            $mainComponent = array_usearch($components, function ($obj) {
+                return $obj->type == "component";
+            })[2];
 
-            $compObj = json_decode($component);
-            $value = $compObj->value;
+            // If we for some reason don't have a main component, we leave this group
+            if (empty($mainComponent)) {
+                continue;
+            }
 
-            $hasComponentItems = false;
-            foreach ($groupedComponentItems as $group) {
-                $uuid = $group['key'];
+            var_dump($mainComponent);
 
-                if ($compObj->uuid !== $uuid) {
+            // Add the main component to the db first to get the id
+            addPostComponentItem($conn, $blogId, null, $uuid, $groupKey, $mainComponent->type, $mainComponent->value);
+
+            $componentId = $conn->insert_id;
+
+            foreach ($components as $componentsKey => $component) {
+
+                // Don't do anything with the main component
+                if ($component->type === "component") {
                     continue;
                 }
 
-                $hasComponentItems = true;
+                // Add the secondary component to the db
+                addPostComponentItem($conn, $blogId, $componentId, $uuid, $componentsKey, $components['type'], $components['value']);
+            }
+        }
+        $conn->close();
+        $_POST = array();
+        exit;
 
-                // Create a new component
-                $addedBlogComponent = addBlogComponent($conn, $blogId, $uuid, $key, $compObj->type, $value);
+        if (isset($_POST["component"])) {
+            foreach ($_POST["components"] as $key => $component) {
 
-                $componentId = $conn->insert_id;
+                $compObj = json_decode($component);
+                $value = $compObj->value;
 
-                if (!$addedBlogComponent) {
-                    echo $addedBlogComponent->error;
-                }
+                $hasComponentItems = false;
+                foreach ($groupedComponentItems as $group) {
+                    $uuid = $group['key'];
 
-                foreach ($group['value'] as $i => $componentItem) {
+                    if ($compObj->uuid !== $uuid) {
+                        continue;
+                    }
 
-                    $addedPostComponentItem = addPostComponentItem($conn, $blogId, $componentId, $uuid, $i, $componentItem->type, $componentItem->value);
+                    $hasComponentItems = true;
 
-                    if (!$addedPostComponentItem) {
+                    // Create a new component
+                    $addedBlogComponent = addBlogComponent($conn, $blogId, $uuid, $key, $compObj->type, $value);
+
+                    $componentId = $conn->insert_id;
+
+                    if (!$addedBlogComponent) {
                         echo $addedBlogComponent->error;
                     }
+
+                    foreach ($group['value'] as $i => $componentItem) {
+
+                        $addedPostComponentItem = addPostComponentItem($conn, $blogId, $componentId, $uuid, $i, $componentItem->type, $componentItem->value);
+
+                        if (!$addedPostComponentItem) {
+                            echo $addedBlogComponent->error;
+                        }
+                    }
                 }
-            }
 
-            if ($hasComponentItems === false) {
+                if ($hasComponentItems === false) {
 
-                if (isset($newImageNames[$value])) {
-                    $value = $newImageNames[$value];
-                }
+                    if (isset($newImageNames[$value])) {
+                        $value = $newImageNames[$value];
+                    }
 
-                $value = str_replace(array("\n", "\r"), '', nl2br(htmlspecialchars($value)));
+                    $value = str_replace(array("\n", "\r"), '', nl2br(htmlspecialchars($value)));
 
-                $addedBlogComponent = addBlogComponent($conn, $blogId, $compObj->uuid, $key, $compObj->type, $value);
+                    $addedBlogComponent = addBlogComponent($conn, $blogId, $compObj->uuid, $key, $compObj->type, $value);
 
-                if (!$addedBlogComponent) {
-                    echo $addedBlogComponent->error;
+                    if (!$addedBlogComponent) {
+                        echo $addedBlogComponent->error;
+                    }
                 }
             }
         }

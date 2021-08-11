@@ -73,7 +73,7 @@ function addBlogComponent(mysqli $conn, int $blogId, string $uuid, int $outputOr
     return $stmt;
 }
 
-function addPostComponentItem(mysqli $conn, int $blogId, int $componentId, string $uuid, int $outputOrder, string $type, string $content)
+function addPostComponentItem(mysqli $conn, int $blogId, ?int $componentId, string $uuid, int $outputOrder, string $type, string $content)
 {
     $prepared = $stmt = $conn->prepare("INSERT INTO ComponentItems (blogId, componentId, uuid, outputOrder, type, content) VALUES (?, ?, ?, ?, ?, ?)");
     if (!$prepared) {

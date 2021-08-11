@@ -50,22 +50,15 @@ function utf8ize($d)
 
     const getControlsDiv = (id, type, description) => {
 
-        const getButtonControl = (a, b, f) => {
+        const getButtonControl = (text, type, action) => {
 
-            const removeButton = document.createElement('div');
-            removeButton.className = "button " + b;
-
-            const buttonContent = document.createElement('span');
-            buttonContent.innerHTML = a;
-
-            buttonContent.addEventListener('click', (e) => {
-                e.stopPropagation();
-                f(e.target.parentNode.parentNode.parentNode);
-            });
-
-            removeButton.appendChild(buttonContent);
+            const removeButton = document.createElement('input');
+            removeButton.className = "button " + type;
+            removeButton.type = "button";
+            removeButton.value = text;
+            
             removeButton.addEventListener('click', (e) => {
-                f(e.target.parentNode.parentNode);
+                action(e.target.parentNode.parentNode);
             });
 
             return removeButton;
@@ -210,7 +203,7 @@ function utf8ize($d)
         //paragraphLabel.htmlFor = imageInput.id;
         //paragraphLabel.innerHTML = "Select image";
         componentLabel.style = "display: none;";
-        componentLabel.name = "components[]";
+        componentLabel.name = "componentItems[]";
         componentLabel.value = JSON.stringify({
             type: "component",
             value: "",
@@ -384,7 +377,7 @@ function utf8ize($d)
             <label for="tags">Tags (split by comma):</label>
             <input type="text" id="tags" name="tags" value="<?= (isset($tags) ? $tags : "") ?>">
 
-            <input id="submit" class="button" type="submit" name="submit" value="Save">
+            <button id="submit" class="button" type="submit" name="submit">Save</button>
         </div>
     </form>
 </div>

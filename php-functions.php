@@ -11,6 +11,18 @@ function generateRandomString($length = 10)
     return $randomString;
 }
 
+function array_usearch(array $array, callable $comparitor)
+{
+    return array_filter(
+        $array,
+        function ($element) use ($comparitor) {
+            if ($comparitor($element)) {
+                return $element;
+            }
+        }
+    );
+}
+
 function groupBy($array, $condition)
 {
     $dictionary = array();
@@ -39,6 +51,6 @@ function groupBy($array, $condition)
             ]);
         }
     }
-    
+
     return $dictionary;
 }
