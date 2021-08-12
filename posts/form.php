@@ -28,23 +28,29 @@ function utf8ize($d)
 
 <script>
     $(document).ready(function() {
-        <?php if (isset($componentList)) : ?>
-            <?php foreach ($componentList as $component) : ?>
+        <?php if (isset($components)) : ?>
+            <?php while ($component = $components->fetch_assoc()) : ?>
 
                 var data = JSON.parse(`<?php echo json_encode(($component)); ?>`);
+                console.log(data);
+                var uuid = data.componentId ? data.uuid : undefined;
+                var parentId = (data.componentId ? (data.uuid + "-component-body") : "component-list")
                 switch (data.type) {
+                    case "component":
+                        addSectionComponent(data, parentId);
+                        break;
                     case "image":
                         addImageComponent(data, "component-list");
                         break;
                     case "textarea":
-                        addTextareaComponent(data, "component-list");
+                        addTextareaComponent(data, parentId, uuid);
                         break;
                     default:
                         console.log("Oop");
                         break;
                 }
 
-            <?php endforeach; ?>
+            <?php endwhile; ?>
         <?php endif; ?>
     })
 
@@ -161,7 +167,7 @@ function utf8ize($d)
 
     const addSectionComponent = (component, parentId) => {
 
-        let id = createUUID();
+        let id = component ? component.uuid : createUUID();
 
         const childDiv = document.createElement("div");
         childDiv.id = id + "-component-body";
@@ -263,7 +269,7 @@ function utf8ize($d)
 
     const addImageComponent = (component, parentId) => {
 
-        let id = createUUID();
+        let id = component ? component.uuid : createUUID();
 
         const childDiv = document.createElement("div");
         childDiv.id = id + "-component-body";
@@ -328,7 +334,7 @@ function utf8ize($d)
 
     const addTextareaComponent = (component, parentId, otherParentId) => {
 
-        let id = createUUID();
+        let id = component ? component.uuid : createUUID();
 
         const childDiv = document.createElement("div");
         childDiv.id = id + "-component-body";
@@ -368,6 +374,7 @@ function utf8ize($d)
         const parentDiv = getBaseComponent(component, id, parentId, "Textarea component", "Description text");
         parentDiv.appendChild(childDiv);
 
+        debugger;
         document.getElementById(parentId).appendChild(parentDiv);
     };
 </script>
