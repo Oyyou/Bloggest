@@ -175,6 +175,7 @@ a {
         flex-direction: column;
         grid-column: 1;
         height: fit-content;
+        border: solid lightgray 1px;
 
         .form-side-panel-header {
             margin: auto;
@@ -274,6 +275,7 @@ a {
                 .component-body {
                     padding: 5px;
                     box-sizing: border-box;
+                    transition: .3s all;
                     textarea {
                         min-height: 100px;
                     }
@@ -282,6 +284,10 @@ a {
                         max-height: 240px;
                         /*Done in JS. Search for 'imageElement.style'. Sorry xxx */
                     }
+                }
+
+                .component-minimized {
+                    display: none;
                 }
             }
         }

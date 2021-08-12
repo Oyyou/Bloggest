@@ -34,10 +34,10 @@ function utf8ize($d)
                 var data = JSON.parse(`<?php echo json_encode(($component)); ?>`);
                 switch (data.type) {
                     case "image":
-                        addImageComponent(data);
+                        addImageComponent(data, "component-list");
                         break;
                     case "textarea":
-                        addTextareaComponent(data);
+                        addTextareaComponent(data, "component-list");
                         break;
                     default:
                         console.log("Oop");
@@ -48,7 +48,7 @@ function utf8ize($d)
         <?php endif; ?>
     })
 
-    const getControlsDiv = (id, type, description) => {
+    const getControlsDiv = (id, parentId, type, description) => {
 
         const getButtonControl = (text, type, action) => {
 
@@ -56,7 +56,7 @@ function utf8ize($d)
             removeButton.className = "button " + type;
             removeButton.type = "button";
             removeButton.value = text;
-            
+
             removeButton.addEventListener('click', (e) => {
                 action(e.target.parentNode.parentNode);
             });
@@ -82,8 +82,12 @@ function utf8ize($d)
         controlsHeaderDiv.appendChild(descriptionText);
 
         const removeButton = getButtonControl('X', 'remove', (value) => {
-            document.getElementById("component-list").removeChild(value);
+            document.getElementById(parentId).removeChild(value);
         })
+
+        const minimizeButton = getButtonControl('_', "minimize", (value) => {
+            $("#" + id + ">.component-body").toggleClass("component-minimized");
+        });
 
         const moveUpButton = getButtonControl("↑", "move-up", (value) => {
 
@@ -136,30 +140,41 @@ function utf8ize($d)
         controlsDiv.appendChild(controlsHeaderDiv);
         controlsDiv.appendChild(moveUpButton);
         controlsDiv.appendChild(moveDownButton);
+        controlsDiv.appendChild(minimizeButton);
         controlsDiv.appendChild(removeButton);
 
         return controlsDiv;
     }
 
-    const getBaseComponent = (dbComponent, id, title, description) => {
+    const getBaseComponent = (dbComponent, id, parentId, title, description) => {
 
         const parentDiv = document.createElement('div');
-        parentDiv.className = "form-addtional component";
+        parentDiv.className = "component";
         parentDiv.id = id;
 
-        controlsDiv = getControlsDiv(id, title, description);
+        controlsDiv = getControlsDiv(id, parentId, title, description);
 
         parentDiv.appendChild(controlsDiv);
 
         return parentDiv;
     }
 
-    const addSectionComponent = (component) => {
+    const addSectionComponent = (component, parentId) => {
 
         let id = createUUID();
 
         const childDiv = document.createElement("div");
+        childDiv.id = id + "-component-body";
         childDiv.className = "component-body"
+
+        const addSectionButton = document.createElement("input");
+        addSectionButton.type = "button";
+        addSectionButton.value = "Add paragraph";
+
+        addSectionButton.addEventListener("click", (e) => {
+            addTextareaComponent(null, id + "-component-body", id);
+        });
+
 
         const sectionTitle = document.createElement("input");
         sectionTitle.required = 'required';
@@ -229,23 +244,29 @@ function utf8ize($d)
             });
         }
 
+        //childDiv.appendChild(addSectionButton);
         childDiv.appendChild(sectionTitle);
         childDiv.appendChild(textareaElement);
         childDiv.appendChild(titleLabel);
         childDiv.appendChild(paragraphLabel);
         childDiv.appendChild(componentLabel);
 
-        const parentDiv = getBaseComponent(component, id, "Section component", "Description text");
-        parentDiv.appendChild(childDiv);
+        const addComponentsDiv = document.createElement("div");
+        addComponentsDiv.appendChild(addSectionButton);
 
-        document.getElementById("component-list").appendChild(parentDiv);
+        const parentDiv = getBaseComponent(component, id, parentId, "Section component", "Description text");
+        parentDiv.appendChild(childDiv);
+        parentDiv.appendChild(addSectionButton);
+
+        document.getElementById(parentId).appendChild(parentDiv);
     };
 
-    const addImageComponent = (component) => {
+    const addImageComponent = (component, parentId) => {
 
         let id = createUUID();
 
         const childDiv = document.createElement("div");
+        childDiv.id = id + "-component-body";
         childDiv.className = "component-body"
 
         const imageElement = document.createElement("img");
@@ -299,17 +320,18 @@ function utf8ize($d)
         childDiv.appendChild(imageLabel);
 
 
-        const parentDiv = getBaseComponent(component, id, "Image component", "Description text");
+        const parentDiv = getBaseComponent(component, id, parentId, "Image component", "Description text");
         parentDiv.appendChild(childDiv);
 
-        document.getElementById("component-list").appendChild(parentDiv);
+        document.getElementById(parentId).appendChild(parentDiv);
     };
 
-    const addTextareaComponent = (component) => {
+    const addTextareaComponent = (component, parentId, otherParentId) => {
 
         let id = createUUID();
 
         const childDiv = document.createElement("div");
+        childDiv.id = id + "-component-body";
         childDiv.className = "component-body"
 
         const textareaElement = document.createElement("textarea");
@@ -321,13 +343,13 @@ function utf8ize($d)
         //label.htmlFor = imageInput.id;
         //label.innerHTML = "Select image";
         label.style = "display: none;";
-        label.name = "components[]";
+        label.name = "componentItems[]";
 
         textareaElement.addEventListener('change', (e) => {
             label.value = JSON.stringify({
                 type: "textarea",
                 value: e.target.value,
-                uuid: id,
+                uuid: otherParentId ? otherParentId : id,
             });
         });
 
@@ -343,10 +365,10 @@ function utf8ize($d)
         childDiv.appendChild(textareaElement);
         childDiv.appendChild(label);
 
-        const parentDiv = getBaseComponent(component, id, "Textarea component", "Description text");
+        const parentDiv = getBaseComponent(component, id, parentId, "Textarea component", "Description text");
         parentDiv.appendChild(childDiv);
 
-        document.getElementById("component-list").appendChild(parentDiv);
+        document.getElementById(parentId).appendChild(parentDiv);
     };
 </script>
 
@@ -356,12 +378,12 @@ function utf8ize($d)
     </h2>
 <?php endif; ?>
 <div class="blog-form-container">
-    <div class="form-side-panel">
-        <h3 class="form-side-panel-header">Options</h3>
+    <fieldset class="form-side-panel">
+        <legend class="form-side-panel-header">Options</legend>
         <button class="addSection">Add Section</button>
         <button id="addTextarea">Add Textarea</button>
         <button id="addImage">Add Image</button>
-    </div>
+    </fieldset>
     <form method="post" class="blog-form" enctype="multipart/form-data">
         <div class="form-body" id="blog-form">
             <label for="title">Title:</label>
@@ -383,7 +405,7 @@ function utf8ize($d)
 </div>
 
 <script>
-    $(".addSection").click(() => addSectionComponent(null));
-    $("#addImage").click(() => addImageComponent(null));
-    $("#addTextarea").click(() => addTextareaComponent(null));
+    $(".addSection").click(() => addSectionComponent(null, "component-list"));
+    $("#addImage").click(() => addImageComponent(null, "component-list"));
+    $("#addTextarea").click(() => addTextareaComponent(null, "component-list"));
 </script>

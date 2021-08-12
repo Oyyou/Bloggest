@@ -93,6 +93,7 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
         }) : array();
 
         foreach ($groupedComponentItems as $groupKey => $group) {
+            
             //var_dump($key);
             //var_dump($group['value']);
             $uuid = $group['key'];
@@ -106,8 +107,6 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
                 continue;
             }
 
-            var_dump($mainComponent);
-
             // Add the main component to the db first to get the id
             addPostComponentItem($conn, $blogId, null, $uuid, $groupKey, $mainComponent->type, $mainComponent->value);
 
@@ -120,10 +119,13 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
                     continue;
                 }
 
+                $value = str_replace(array("\n", "\r"), '', nl2br(htmlspecialchars($component->value)));
+
                 // Add the secondary component to the db
-                addPostComponentItem($conn, $blogId, $componentId, $uuid, $componentsKey, $components['type'], $components['value']);
+                addPostComponentItem($conn, $blogId, $componentId, $uuid, $componentsKey, $component->type, $value);
             }
         }
+
         $conn->close();
         $_POST = array();
         exit;
