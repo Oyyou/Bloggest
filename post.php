@@ -185,7 +185,7 @@ function getSectionComponentContainer($component)
                     $result = '<h3>' . $componentItem["content"] . '</h3>';
                     break;
 
-                case "body":
+                case "textarea":
                     $result = '<p>' . $componentItem["content"] . '</p>';
                     break;
             }

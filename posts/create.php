@@ -93,22 +93,26 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
         }) : array();
 
         foreach ($groupedComponentItems as $groupKey => $group) {
-            
-            //var_dump($key);
-            //var_dump($group['value']);
+
             $uuid = $group['key'];
             $components = $group['value'];
             $mainComponent = array_usearch($components, function ($obj) {
                 return $obj->type == "component";
-            })[2];
+            })[0];
 
             // If we for some reason don't have a main component, we leave this group
             if (empty($mainComponent)) {
                 continue;
             }
 
+            $parentId = null;
+
+            if ($mainComponent->parentUUID) {
+                $parentId = getPostMainComponentByUUID($conn, $mainComponent->parentUUID)->id;
+            }
+
             // Add the main component to the db first to get the id
-            addPostComponentItem($conn, $blogId, null, $uuid, $groupKey, $mainComponent->type, $mainComponent->value);
+            addPostComponentItem($conn, $blogId, $parentId, $uuid, $groupKey, $mainComponent->type, $mainComponent->value);
 
             $componentId = $conn->insert_id;
 

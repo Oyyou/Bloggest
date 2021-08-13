@@ -34,7 +34,7 @@ if ($blogId) {
         //$components = getBlogComponents($conn, $blogId);
         $components = getPostComponentItemsByBlogId($conn, $blogId);
 
-        /*if ($components) {
+        if ($components) {
             if ($components->num_rows > 0) {
                 while ($component = $components->fetch_assoc()) {
                     if ($component) {
@@ -42,6 +42,12 @@ if ($blogId) {
                             case "image":
                                 //$component["content"] = $uploadPath . $component["content"];
                                 break;
+                        }
+                        if (isset($component["componentId"])) {
+                            $parentComponent = getPostMainComponent($conn, $component["componentId"]);
+                            $component['parentUUID'] = $parentComponent->uuid;
+                        } else {
+                            $component['parentUUID'] = null;
                         }
 
                         array_push($componentList, $component);
@@ -52,7 +58,7 @@ if ($blogId) {
 
         if ($userId !== $_SESSION["id"]) {
             $unauthorizedBlog = true;
-        }*/
+        }
     }
 
     $conn->close();

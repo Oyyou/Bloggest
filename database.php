@@ -93,9 +93,31 @@ function getPostComponentItems(mysqli $conn, int $componentId)
     return $result;
 }
 
+function getPostMainComponent(mysqli $conn, $componentId)
+{
+    $stmt = $conn->prepare("SELECT id, uuid, componentId, outputOrder, type, content FROM ComponentItems WHERE id=? and type ='component' ORDER BY outputOrder limit 1");
+    $stmt->bind_param("i", $componentId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $value = $result->fetch_object();
+
+    return $value;
+}
+
+function getPostMainComponentByUUID(mysqli $conn, $uuid)
+{
+    $stmt = $conn->prepare("SELECT id, uuid, componentId, outputOrder, type, content FROM ComponentItems WHERE uuid=? and type ='component' ORDER BY outputOrder limit 1");
+    $stmt->bind_param("s", $uuid);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $value = $result->fetch_object();
+
+    return $value;
+}
+
 function getPostComponentItemsByBlogId(mysqli $conn, int $blogId)
 {
-    $result = $conn->query("SELECT id, uuid, blogId, componentId, outputOrder, type, content FROM ComponentItems WHERE blogId=$blogId ORDER BY outputOrder");
+    $result = $conn->query("SELECT id, uuid, blogId, componentId, outputOrder, type, content FROM ComponentItems WHERE blogId=$blogId ORDER BY blogId, componentId, outputOrder");
 
     return $result;
 }
