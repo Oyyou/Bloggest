@@ -26,7 +26,7 @@ function utf8ize($d)
                     const parentComponent = null;
                 }
                 var parentId = (data.componentId ? (data.parentUUID + "-component-body") : "component-list")
-                
+
                 switch (data.type) {
                     case "component":
                         addComponent(data, parentId, uuid);
@@ -44,12 +44,12 @@ function utf8ize($d)
                         console.log(data.type);
                         break;
                 }
-                
+
             <?php endforeach; ?>
         <?php endif; ?>
     })
 
-    const getControlsDiv = (id, parentId, type, description) => {
+    const getControlsDiv = (id, parentId, type, description, isRequired = false) => {
 
         const getButtonControl = (text, type, action) => {
 
@@ -87,7 +87,7 @@ function utf8ize($d)
         })
 
         const minimizeButton = getButtonControl('_', "minimize", (value) => {
-            $("#" + id + ">.component-body").toggleClass("component-minimized");
+            $("#" + id + ">.component-main").toggleClass("component-minimized");
         });
 
         const moveUpButton = getButtonControl("↑", "move-up", (value) => {
@@ -139,34 +139,50 @@ function utf8ize($d)
         });
 
         controlsDiv.appendChild(controlsHeaderDiv);
-        controlsDiv.appendChild(moveUpButton);
-        controlsDiv.appendChild(moveDownButton);
         controlsDiv.appendChild(minimizeButton);
-        controlsDiv.appendChild(removeButton);
+
+        if (isRequired === false) {
+            controlsDiv.appendChild(moveUpButton);
+            controlsDiv.appendChild(moveDownButton);
+            controlsDiv.appendChild(removeButton);
+        }
 
         return controlsDiv;
     }
 
-    const getBaseComponent = (dbComponent, id, parentId, title, description) => {
+    const getBaseComponent = (dbComponent, id, parentId, title, description, isRequired = false) => {
 
         const parentDiv = document.createElement('div');
-        parentDiv.className = "component";
+        parentDiv.className = "component" + (isRequired ? " component-required" : "");
         parentDiv.id = id;
 
-        controlsDiv = getControlsDiv(id, parentId, title, description);
+
+        controlsDiv = getControlsDiv(id, parentId, title, description, isRequired);
+
+        const main = document.createElement("div");
+        main.id = id + "-component-main";
+        main.className = "component-main"
+
+        const head = document.createElement("div");
+        head.id = id + "-component-head";
+        head.className = "component-head"
+
+        const body = document.createElement("div");
+        body.id = id + "-component-body";
+        body.className = "component-body"
+
+        main.appendChild(head);
+        main.appendChild(body);
 
         parentDiv.appendChild(controlsDiv);
+        parentDiv.appendChild(main);
 
         return parentDiv;
     }
 
-    const addComponent = (dbComponent, parentId, parentUUID = null) => {
+    const addComponent = (dbComponent, parentId, parentUUID = null, isRequired = false) => {
 
         let id = dbComponent ? dbComponent.uuid : createUUID();
-
-        const childDiv = document.createElement("div");
-        childDiv.id = id + "-component-body";
-        childDiv.className = "component-body"
 
         const componentLabel = document.createElement('input');
         componentLabel.type = "hidden";
@@ -187,23 +203,34 @@ function utf8ize($d)
                 uuid: id,
             });
         }
-        childDiv.appendChild(componentLabel);
 
-        const parentDiv = getBaseComponent(dbComponent, id, parentId, "Section component", "Description text");
-        parentDiv.appendChild(childDiv);
-
+        const parentDiv = getBaseComponent(dbComponent, id, parentId, "Section component", "Description text", isRequired);
         document.getElementById(parentId).appendChild(parentDiv);
+
+        const body = document.getElementById(id + "-component-body");
+        body.appendChild(componentLabel);
     }
 
-    const addSectionComponent = (dbComponent, parentId, parentUUID) => {
+    const addSectionComponent = (dbComponent, parentId, parentUUID, isRequired = false) => {
 
         let id = dbComponent ? dbComponent.uuid : createUUID();
 
         addComponent({
             uuid: id
-        }, "component-list")
-        addTitleComponent(dbComponent, id + "-component-body", id, false);
-        addTextareaComponent(dbComponent, id + "-component-body", id, false);
+        }, parentId, null, isRequired)
+
+        addParagraphButton = document.createElement("input");
+        addParagraphButton.type = "button";
+        addParagraphButton.value = "Add Paragraph";
+
+        addParagraphButton.addEventListener('click', (e) => {
+            addTextareaComponent(dbComponent, id + "-component-body", id);
+        });
+
+        document.getElementById(id + "-component-head").appendChild(addParagraphButton);
+
+        addTitleComponent(dbComponent, id + "-component-body", id, true);
+        addTextareaComponent(dbComponent, id + "-component-body", id, true);
     };
 
     const addImageComponent = (component, parentId, parentUUID) => {
@@ -265,30 +292,15 @@ function utf8ize($d)
         childDiv.appendChild(imageLabel);
 
 
-        const parentDiv = getBaseComponent(component, id, parentId, "Image component", "Description text");
+        const parentDiv = getBaseComponent(component, id, parentId, "Image component", "Description text", isRequired);
         parentDiv.appendChild(childDiv);
 
         document.getElementById(parentId).appendChild(parentDiv);
     };
 
-    const addTextareaComponent = (dbComponent, parentId, parentUUID, hasControls = false) => {
+    const addTextareaComponent = (dbComponent, parentId, parentUUID, isRequired = false) => {
 
         let id = dbComponent ? dbComponent.uuid : createUUID();
-
-        const childDiv = document.createElement("div");
-        childDiv.id = id + "-component-body";
-        childDiv.className = "component-body"
-
-        const componentLabel = document.createElement('input');
-        componentLabel.type = "hidden";
-        componentLabel.style = "display: none;";
-        componentLabel.name = "componentItems[]";
-        componentLabel.value = JSON.stringify({
-            type: "component",
-            value: "",
-            parentUUID: parentUUID,
-            uuid: id,
-        });
 
         const textareaElement = document.createElement("textarea");
         textareaElement.required = 'required';
@@ -315,42 +327,20 @@ function utf8ize($d)
                 parentUUID: parentUUID,
                 uuid: dbComponent.uuid,
             });
-            componentLabel.value = JSON.stringify({
-                type: "component",
-                value: dbComponent.content,
-                parentUUID: parentUUID,
-                uuid: dbComponent.uuid,
-            });
         }
 
-        childDiv.appendChild(componentLabel);
-        childDiv.appendChild(textareaElement);
-        childDiv.appendChild(label);
-
-        const parentDiv = getBaseComponent(dbComponent, id, parentId, "Paragraph", "");
-        parentDiv.appendChild(childDiv);
-
+        const parentDiv = getBaseComponent(dbComponent, id, parentId, "Paragraph", "", isRequired);
         document.getElementById(parentId).appendChild(parentDiv);
+
+        const body = document.getElementById(id + "-component-body");
+        body.appendChild(textareaElement);
+        body.appendChild(label);
+
     };
 
-    const addTitleComponent = (dbComponent, parentId, parentUUID, hasControls = false) => {
+    const addTitleComponent = (dbComponent, parentId, parentUUID, isRequired = false) => {
 
         let id = dbComponent ? dbComponent.uuid : createUUID();
-
-        const childDiv = document.createElement("div");
-        childDiv.id = id + "-component-body";
-        childDiv.className = "component-body"
-
-        const componentLabel = document.createElement('input');
-        componentLabel.type = "hidden";
-        componentLabel.style = "display: none;";
-        componentLabel.name = "componentItems[]";
-        componentLabel.value = JSON.stringify({
-            type: "component",
-            value: "",
-            parentUUID: parentUUID,
-            uuid: id,
-        });
 
         const sectionTitle = document.createElement("input");
         sectionTitle.required = 'required';
@@ -370,28 +360,22 @@ function utf8ize($d)
         });
 
         if (dbComponent) {
+            sectionTitle.value = dbComponent.content;
             label.value = JSON.stringify({
-                type: "header",
-                value: dbComponent.content,
-                parentUUID: parentUUID,
-                uuid: dbComponent.uuid,
-            });
-            componentLabel.value = JSON.stringify({
-                type: "component",
+                type: "title",
                 value: dbComponent.content,
                 parentUUID: parentUUID,
                 uuid: dbComponent.uuid,
             });
         }
 
-        childDiv.appendChild(componentLabel);
-        childDiv.appendChild(sectionTitle);
-        childDiv.appendChild(label);
 
-        const parentDiv = getBaseComponent(dbComponent, id, parentId, "Title", "");
-        parentDiv.appendChild(childDiv);
-
+        const parentDiv = getBaseComponent(dbComponent, id, parentId, "Title", "", isRequired);
         document.getElementById(parentId).appendChild(parentDiv);
+
+        const body = document.getElementById(id + "-component-body");
+        body.appendChild(sectionTitle);
+        body.appendChild(label);
     }
 </script>
 

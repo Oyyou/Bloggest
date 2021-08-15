@@ -156,9 +156,14 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
             echo "Not all images have a value..!";
         }
 
+        $groupedComponentItems = isset($_POST["componentItems"]) ? groupBy($_POST["componentItems"], function ($e) {
+            return $e->uuid;
+        }) : array();
+
         $usedUUIDs = array();
 
-        foreach ($_POST["components"] as $key => $component) {
+        //foreach ($groupedComponentItems as $groupKey => $group) {
+        foreach ($_POST["componentItems"] as $key => $component) {
             $componentObj = json_decode($component);
 
             $dbComponent = getBlogComponentByIds($conn, $blogId, $componentObj->uuid);
@@ -179,6 +184,7 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
 
                 // Add new component
                 addBlogComponent($conn, $blogId, $componentObj->uuid, $key, $componentObj->type, $value);
+                //addPostComponentItem($conn, $blogId, $parentId, $componentObj->uuid, $i, $componentObj->type, $value);
             }
 
             array_push($usedUUIDs, $componentObj->uuid);
@@ -200,7 +206,7 @@ if (isset($_POST["title"]) && isset($_POST["shortDescription"]) && isset($blogId
 
 ?>
     <script type="text/javascript">
-        window.location = "/post/" + <?= $blogId ?>;
+        //window.location = "/post/" + <?= $blogId ?>;
     </script>
 <?php
 }

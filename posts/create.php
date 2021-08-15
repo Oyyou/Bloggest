@@ -92,41 +92,51 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
             return $e->uuid;
         }) : array();
 
+        $i = 0;
+
         foreach ($groupedComponentItems as $groupKey => $group) {
 
             $uuid = $group['key'];
             $components = $group['value'];
-            $mainComponent = array_usearch($components, function ($obj) {
+            $mainComponents = array_usearch($components, function ($obj) {
                 return $obj->type == "component";
-            })[0];
+            });
 
             // If we for some reason don't have a main component, we leave this group
-            if (empty($mainComponent)) {
-                continue;
+            if (count($mainComponents) > 0) {
+
+                $mainComponent = $mainComponents[0];
+
+                $parentId = null;
+
+                if ($mainComponent->parentUUID) {
+                    $parentId = getPostMainComponentByUUID($conn, $mainComponent->parentUUID)->id;
+                }
+                $i++;
+                // Add the main component to the db first to get the id
+                addPostComponentItem($conn, $blogId, $parentId, $uuid, $i, $mainComponent->type, $mainComponent->value);
             }
-
-            $parentId = null;
-
-            if ($mainComponent->parentUUID) {
-                $parentId = getPostMainComponentByUUID($conn, $mainComponent->parentUUID)->id;
-            }
-
-            // Add the main component to the db first to get the id
-            addPostComponentItem($conn, $blogId, $parentId, $uuid, $groupKey, $mainComponent->type, $mainComponent->value);
 
             $componentId = $conn->insert_id;
 
             foreach ($components as $componentsKey => $component) {
+                $i++;
 
                 // Don't do anything with the main component
                 if ($component->type === "component") {
                     continue;
                 }
 
+                $parentId = null;
+
+                if ($component->parentUUID) {
+                    $parentId = getPostMainComponentByUUID($conn, $component->parentUUID)->id;
+                }
+
                 $value = str_replace(array("\n", "\r"), '', nl2br(htmlspecialchars($component->value)));
 
                 // Add the secondary component to the db
-                addPostComponentItem($conn, $blogId, $componentId, $uuid, $componentsKey, $component->type, $value);
+                addPostComponentItem($conn, $blogId, $parentId, $uuid, $i, $component->type, $value);
             }
         }
 
