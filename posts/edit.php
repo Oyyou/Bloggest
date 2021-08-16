@@ -65,7 +65,7 @@ if ($blogId) {
 }
 ?>
 
-<div class="container blog-container">
+<main class="container">
     <?php if ($unauthorizedBlog) : ?>
         <h2>Slow down there, champ. This isn't your blog! You've gotta get outta here</h2>
     <?php elseif ($foundBlog) : ?>
@@ -76,7 +76,7 @@ if ($blogId) {
     <?php else : ?>
         <h2>Sorry, friend. The blog you're looking for no longer (or maybe never did..!) exist. Please move along</h2>
     <?php endif; ?>
-</div>
+</main>
 
 <?php include("../components/footer.php"); ?>
 

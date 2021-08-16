@@ -20,7 +20,7 @@ function utf8ize($d)
             <?php foreach ($componentList as $component) : ?>
 
                 var data = JSON.parse(`<?php echo json_encode(($component)); ?>`);
-                console.log(data);
+
                 var uuid = undefined; // data.componentId ? data.uuid : undefined;
                 if (data.componentId) {
                     const parentComponent = null;
@@ -29,7 +29,10 @@ function utf8ize($d)
 
                 switch (data.type) {
                     case "component":
-                        addComponent(data, parentId, uuid);
+                        addSectionComponent(data, parentId, uuid);
+                        break;
+                    case "section":
+                        addSectionComponent(data, parentId, uuid);
                         break;
                     case "image":
                         addImageComponent(data, "component-list");
@@ -93,11 +96,21 @@ function utf8ize($d)
         const moveUpButton = getButtonControl("↑", "move-up", (value) => {
 
             const parent = value.parentNode;
-            const collection = parent.children;
+            const collection = parent.childNodes;
 
             let obj = null;
             for (let i = 0; i < collection.length; i++) {
                 const current = collection[i];
+
+                if (!current.classList.contains("component")) {
+                    continue;
+                }
+
+                if (current.hasAttribute("can-edit")) {
+                    if (current.getAttribute("can-edit") === "false") {
+                        continue;
+                    }
+                }
 
                 if (current.id === value.id) {
                     if (i === 0) {
@@ -122,6 +135,16 @@ function utf8ize($d)
             let obj = null;
             for (let i = collection.length - 1; i > 0; i--) {
                 const current = collection[i];
+
+                if (!current.classList.contains("component")) {
+                    continue;
+                }
+
+                if (current.hasAttribute("can-edit")) {
+                    if (current.getAttribute("can-edit") === "false") {
+                        continue;
+                    }
+                }
 
                 if (current.id === value.id) {
                     if (i === collection.length - 1) {
@@ -156,6 +179,7 @@ function utf8ize($d)
         parentDiv.className = "component" + (isRequired ? " component-required" : "");
         parentDiv.id = id;
 
+        parentDiv.setAttribute("can-edit", !isRequired);
 
         controlsDiv = getControlsDiv(id, parentId, title, description, isRequired);
 
@@ -180,7 +204,19 @@ function utf8ize($d)
         return parentDiv;
     }
 
-    const addComponent = (dbComponent, parentId, parentUUID = null, isRequired = false) => {
+    const addComponent = (args = {
+        dbComponent: null,
+        parentId: "",
+        parentUUID: null,
+        isRequired: false
+    }) => {
+
+        const {
+            dbComponent,
+            parentId,
+            parentUUID,
+            isRequired
+        } = args;
 
         let id = dbComponent ? dbComponent.uuid : createUUID();
 
@@ -212,12 +248,16 @@ function utf8ize($d)
     }
 
     const addSectionComponent = (dbComponent, parentId, parentUUID, isRequired = false) => {
-
+        
         let id = dbComponent ? dbComponent.uuid : createUUID();
 
         addComponent({
-            uuid: id
-        }, parentId, null, isRequired)
+            dbComponent: {
+                uuid: id
+            },
+            parentId: parentId,
+            isRequired: isRequired
+        });
 
         addParagraphButton = document.createElement("input");
         addParagraphButton.type = "button";
@@ -229,8 +269,10 @@ function utf8ize($d)
 
         document.getElementById(id + "-component-head").appendChild(addParagraphButton);
 
-        addTitleComponent(dbComponent, id + "-component-body", id, true);
-        addTextareaComponent(dbComponent, id + "-component-body", id, true);
+        if (!dbComponent) {
+            addTitleComponent(dbComponent, id + "-component-body", id, true);
+            addTextareaComponent(dbComponent, id + "-component-body", id, true);
+        }
     };
 
     const addImageComponent = (component, parentId, parentUUID) => {
