@@ -59,7 +59,6 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
         $newImageNames = array();
 
         if ($allImagesSet) {
-
             if (isset($_FILES["images"])) {
                 foreach ($_FILES["images"]["tmp_name"] as $key => $tmp_name) {
 
@@ -109,7 +108,7 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
 
                 $parentId = null;
 
-                if ($mainComponent->parentUUID) {
+                if (property_exists($mainComponent, "parentUUID")) {
                     $parentId = getPostMainComponentByUUID($conn, $mainComponent->parentUUID)->id;
                 }
                 $i++;
@@ -128,73 +127,22 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
                 }
 
                 $parentId = null;
+                var_dump($component);
 
-                if ($component->parentUUID) {
+                if (property_exists($component, "parentUUID")) {
                     $parentId = getPostMainComponentByUUID($conn, $component->parentUUID)->id;
                 }
 
                 $value = str_replace(array("\n", "\r"), '', nl2br(htmlspecialchars($component->value)));
 
                 // Add the secondary component to the db
-                addPostComponentItem($conn, $blogId, $parentId, $uuid, $i, $component->type, $value);
+                addPostComponentItem($conn, $blogId, $parentId, $uuid, $i, $component->type, $value, $component->isRequired);
             }
         }
 
         $conn->close();
         $_POST = array();
         exit;
-
-        if (isset($_POST["component"])) {
-            foreach ($_POST["components"] as $key => $component) {
-
-                $compObj = json_decode($component);
-                $value = $compObj->value;
-
-                $hasComponentItems = false;
-                foreach ($groupedComponentItems as $group) {
-                    $uuid = $group['key'];
-
-                    if ($compObj->uuid !== $uuid) {
-                        continue;
-                    }
-
-                    $hasComponentItems = true;
-
-                    // Create a new component
-                    $addedBlogComponent = addBlogComponent($conn, $blogId, $uuid, $key, $compObj->type, $value);
-
-                    $componentId = $conn->insert_id;
-
-                    if (!$addedBlogComponent) {
-                        echo $addedBlogComponent->error;
-                    }
-
-                    foreach ($group['value'] as $i => $componentItem) {
-
-                        $addedPostComponentItem = addPostComponentItem($conn, $blogId, $componentId, $uuid, $i, $componentItem->type, $componentItem->value);
-
-                        if (!$addedPostComponentItem) {
-                            echo $addedBlogComponent->error;
-                        }
-                    }
-                }
-
-                if ($hasComponentItems === false) {
-
-                    if (isset($newImageNames[$value])) {
-                        $value = $newImageNames[$value];
-                    }
-
-                    $value = str_replace(array("\n", "\r"), '', nl2br(htmlspecialchars($value)));
-
-                    $addedBlogComponent = addBlogComponent($conn, $blogId, $compObj->uuid, $key, $compObj->type, $value);
-
-                    if (!$addedBlogComponent) {
-                        echo $addedBlogComponent->error;
-                    }
-                }
-            }
-        }
 
         //header("location: /dashboard");
     }

@@ -25,23 +25,25 @@ function utf8ize($d)
                 if (data.componentId) {
                     const parentComponent = null;
                 }
-                var parentId = (data.componentId ? (data.parentUUID + "-component-body") : "component-list")
+                var parentId = (data.componentId ? (data.parentUUID + "-component-body") : "component-list");
+
+                var isRequired = data.isRequired === "1";
 
                 switch (data.type) {
                     case "component":
-                        addSectionComponent(data, parentId, uuid);
+                        addSectionComponent(data, parentId, uuid, isRequired);
                         break;
                     case "section":
-                        addSectionComponent(data, parentId, uuid);
+                        addSectionComponent(data, parentId, uuid), isRequired;
                         break;
                     case "image":
                         addImageComponent(data, "component-list");
                         break;
                     case "textarea":
-                        addTextareaComponent(data, parentId, uuid);
+                        addTextareaComponent(data, parentId, uuid, isRequired);
                         break;
                     case "title":
-                        addTitleComponent(data, parentId, uuid);
+                        addTitleComponent(data, parentId, uuid, isRequired);
                         break;
                     default:
                         console.log(data.type);
@@ -358,6 +360,7 @@ function utf8ize($d)
                 value: e.target.value,
                 parentUUID: parentUUID,
                 uuid: id,
+                isRequired: isRequired,
             });
         });
 
@@ -368,6 +371,7 @@ function utf8ize($d)
                 value: dbComponent.content,
                 parentUUID: parentUUID,
                 uuid: dbComponent.uuid,
+                isRequired: isRequired,
             });
         }
 
@@ -398,6 +402,7 @@ function utf8ize($d)
                 value: e.target.value,
                 parentUUID: parentUUID,
                 uuid: id,
+                isRequired: isRequired,
             });
         });
 
@@ -408,6 +413,7 @@ function utf8ize($d)
                 value: dbComponent.content,
                 parentUUID: parentUUID,
                 uuid: dbComponent.uuid,
+                isRequired: isRequired,
             });
         }
 

@@ -73,29 +73,29 @@ function addBlogComponent(mysqli $conn, int $blogId, string $uuid, int $outputOr
     return $stmt;
 }
 
-function addPostComponentItem(mysqli $conn, int $blogId, ?int $componentId, string $uuid, int $outputOrder, string $type, string $content)
+function addPostComponentItem(mysqli $conn, int $blogId, ?int $componentId, string $uuid, int $outputOrder, string $type, string $content, bool $isRequired = false)
 {
-    $prepared = $stmt = $conn->prepare("INSERT INTO ComponentItems (blogId, componentId, uuid, outputOrder, type, content) VALUES (?, ?, ?, ?, ?, ?)");
+    $prepared = $stmt = $conn->prepare("INSERT INTO ComponentItems (blogId, componentId, uuid, outputOrder, type, content, isRequired) VALUES (?, ?, ?, ?, ?, ?, ?)");
     if (!$prepared) {
         echo $conn->error;
     }
-    $stmt->bind_param("iisiss", $blogId, $componentId, $uuid, $outputOrder, $type, $content);
+    $stmt->bind_param("iisissi", $blogId, $componentId, $uuid, $outputOrder, $type, $content, $isRequired);
 
     $stmt->execute();
-
+    echo $stmt->error;
     return $stmt;
 }
 
 function getPostComponentItems(mysqli $conn, int $componentId)
 {
-    $result = $conn->query("SELECT id, uuid, componentId, outputOrder, type, content FROM ComponentItems WHERE componentId=$componentId ORDER BY outputOrder");
+    $result = $conn->query("SELECT id, uuid, componentId, outputOrder, type, content, isRequired FROM ComponentItems WHERE componentId=$componentId ORDER BY outputOrder");
 
     return $result;
 }
 
 function getPostMainComponent(mysqli $conn, $componentId)
 {
-    $stmt = $conn->prepare("SELECT id, uuid, componentId, outputOrder, type, content FROM ComponentItems WHERE id=? and type ='component' ORDER BY outputOrder limit 1");
+    $stmt = $conn->prepare("SELECT id, uuid, componentId, outputOrder, type, content, isRequired FROM ComponentItems WHERE id=? and type ='component' ORDER BY outputOrder limit 1");
     $stmt->bind_param("i", $componentId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -106,7 +106,7 @@ function getPostMainComponent(mysqli $conn, $componentId)
 
 function getPostMainComponentByUUID(mysqli $conn, $uuid)
 {
-    $stmt = $conn->prepare("SELECT id, uuid, componentId, outputOrder, type, content FROM ComponentItems WHERE uuid=? and type ='component' ORDER BY outputOrder limit 1");
+    $stmt = $conn->prepare("SELECT id, uuid, componentId, outputOrder, type, content, isRequired FROM ComponentItems WHERE uuid=? and type ='component' ORDER BY outputOrder limit 1");
     $stmt->bind_param("s", $uuid);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -117,7 +117,7 @@ function getPostMainComponentByUUID(mysqli $conn, $uuid)
 
 function getPostComponentItemsByBlogId(mysqli $conn, int $blogId)
 {
-    $result = $conn->query("SELECT id, uuid, blogId, componentId, outputOrder, type, content FROM ComponentItems WHERE blogId=$blogId ORDER BY blogId, componentId, outputOrder");
+    $result = $conn->query("SELECT id, uuid, blogId, componentId, outputOrder, type, content, isRequired FROM ComponentItems WHERE blogId=$blogId ORDER BY blogId, componentId, outputOrder");
 
     return $result;
 }
