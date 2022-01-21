@@ -24,11 +24,14 @@ if ($blogId) {
 
     if ($blog) {
         $foundBlog = true;
-        $components = getBlogComponents($conn, $blogId);
+        $components = getPostComponentItemsByBlogId($conn, $blogId);
         $author = getUserById($conn, $blog->userId);
 
         $pageTitle = $blog->title;
         $pageDescription = $blog->shortDescription;
+
+        
+        var_dump($components);
 
         if ($components) {
             $foundComponents = true;

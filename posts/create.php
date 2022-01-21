@@ -127,7 +127,7 @@ if (isset($_POST['submit']) && isset($_POST["title"]) && isset($_POST["shortDesc
                 }
 
                 $parentId = null;
-                var_dump($component);
+                //var_dump($component);
 
                 if (property_exists($component, "parentUUID")) {
                     $parentId = getPostMainComponentByUUID($conn, $component->parentUUID)->id;
